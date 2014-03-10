@@ -1,0 +1,26 @@
+@font-face {
+	font-family: futura;
+}
+
+body {
+	font-family: 'Jura' , 'sans-serif';
+	font-size: 12;
+	background: #999396 url("images/cover_alpha.png");
+	background-attachment:fixed;
+    background-repeat: no-repeat;
+	background-size: 100%;
+}
+
+#cover {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+footer {
+	position: absolute;
+	bottom: 4px;
+	left: 4px;
+}
