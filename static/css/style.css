@@ -1,0 +1,69 @@
+@font-face {
+ font-family: futura; src: url('../font/Futura%20(Light).ttf');
+}
+
+body {
+	font-family: futura, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 12;
+}
+
+#arrow{
+	overflow: hidden;
+}
+
+.defaultBG{
+	background-color: #D2CCC9;
+	background-image: url("../images/cover_orthogonal.png");
+	background-attachment: fixed;
+    background-repeat: no-repeat;
+	background-size: 100%;
+	background-position: top;
+}
+
+.blurredBG{
+	background-color: #D2CCC9;
+	background-image: url("../images/cover_orthogonal_blur.png");
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-position: center;
+	-webkit-mask-image: url(../../test.svg);
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+}
+
+.blackBG
+{
+	background-color: #000000;
+	background-size: 100%;
+}
+.stretch {
+	width: 100%;
+	height: 100%;
+}
+.cover {
+	width: 100%;
+}
+
+.content {
+	overflow: hidden;
+	width: 100%;
+	overflow: hidden;
+	position: relative;
+}
+
+#cover_title{
+	text-align: center;
+	letter-spacing: 40px;
+	font-size: 50px;
+	position: absolute;
+	width: 800px;
+	margin-left: -400px;
+	left: 50%;
+	top: 25%;
+}
+
+footer {
+	position: absolute;
+	bottom: 4px;
+	left: 4px;
+}
