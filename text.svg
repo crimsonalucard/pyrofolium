@@ -1,0 +1,8 @@
+	<svg width="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<defs>
+			<clipPath id="arrow">
+				<polygon points="0 416 720 0 1440 416 1440 476 720 60 0 476 "/>
+			</clipPath>
+		</defs>
+        <image xlink:href="static/images/cover_orthogonal_blur.png" width="1440" height="100%"  clip-path="url(#arrow)" />
+	</svg>
