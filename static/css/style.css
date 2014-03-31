@@ -22,13 +22,15 @@ body {
 
 .blurredBG{
 	background-color: #D2CCC9;
-	background-image: url("../images/cover_orthogonal_blur.png");
+	background-image: url("../images/cover_cubes.jpg");
 	background-attachment: fixed;
 	background-repeat: no-repeat;
 	background-position: center;
-	-webkit-mask-image: url(../../test.svg);
+	-webkit-mask-image: url(../../mask2.png);
 	-webkit-mask-repeat: no-repeat;
-	-webkit-mask-position: center;
+	-webkit-mask-position-x: 50%;
+	-webkit-mask-position-y: 100%;
+	-webkit-mask-size: 100%;
 }
 
 .blackBG
@@ -45,6 +47,13 @@ body {
 }
 
 .content {
+	overflow: hidden;
+	width: 100%;
+	overflow: hidden;
+	position: relative;
+}
+
+.transition {
 	overflow: hidden;
 	width: 100%;
 	overflow: hidden;

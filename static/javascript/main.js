@@ -39,11 +39,28 @@ function createArrowPath(thickness){
 	return pathString;
 }
 
+function keepAspectRatioByAdjustingHeight(aspect, element){
+	//aspect is width/height
+	function adjustHeight(){
+//		var height = getViewPortHeight();
+		var width = getViewPortWidth();
+		var newHeight = (1/aspect)*width;
+		element.height(Math.floor(newHeight));
+	}
+	adjustHeight();
+	$(window).resize(adjustHeight);
+
+
+
+}
+
 
 
 //main
 (function(){
+	var maskAspectRatio = 800/402;
 	console.log("javascript initialized!");
 	linkElementToViewPortHeight($('.cover'));
 	linkElementToViewPortHeight($('.content'));
+	keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.transition'));
 })();
