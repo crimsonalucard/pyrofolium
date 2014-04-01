@@ -2,6 +2,15 @@
  font-family: futura; src: url('../font/Futura%20(Light).ttf');
 }
 
+@font-face {
+ font-family: code; src: url('../font/CODE%20Bold.otf');
+}
+
+
+@font-face {
+ font-family: dense; src: url('../font/Dense-Regular.otf');
+}
+
 body {
 	font-family: futura, "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 12;
@@ -9,6 +18,35 @@ body {
 
 #arrow{
 	overflow: hidden;
+}
+
+.futura_font {
+	font-family: futura;
+}
+
+.dense_font {
+	font-family: dense;
+}
+
+.code_font {
+	font-family: code;
+}
+
+.cover_title {
+	position: fixed;
+	width: 800px;
+	top: 20%;
+	margin-left: -400px;
+	left: 50%;
+	text-align: center;
+}
+
+.cover_main_text {
+	letter-spacing: 20px;
+}
+
+.cover_sub_text{
+	font-size: 20px;
 }
 
 .defaultBG{
@@ -20,13 +58,30 @@ body {
 	background-position: top;
 }
 
-.blurredBG{
+.nocubeBG{
+	background-color: #D2CCC9;
+	background-image: url("../images/no_cube.jpg");
+	background-attachment: fixed;
+    background-repeat: no-repeat;
+	background-size: 100%;
+	background-position: top;
+}
+
+.arrowMask{
 	background-color: #D2CCC9;
 	background-image: url("../images/cover_cubes.jpg");
 	background-attachment: fixed;
 	background-repeat: no-repeat;
 	background-position: center;
-	-webkit-mask-image: url(../../mask2.png);
+	-webkit-mask-image: url(../../arrow.png);
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position-x: 50%;
+	-webkit-mask-position-y: 100%;
+	-webkit-mask-size: 100%;
+}
+
+.triangleMask {
+	-webkit-mask-image: url(../../triangle.png);
 	-webkit-mask-repeat: no-repeat;
 	-webkit-mask-position-x: 50%;
 	-webkit-mask-position-y: 100%;
@@ -60,9 +115,14 @@ body {
 	position: relative;
 }
 
-#cover_title{
+.greyBG {
+	background-color: #D2CCC9;
+}
+
+
+
+.title{
 	text-align: center;
-	letter-spacing: 40px;
 	font-size: 50px;
 	position: absolute;
 	width: 800px;
@@ -71,8 +131,38 @@ body {
 	top: 25%;
 }
 
+.dual_panes {
+	height: 100px;
+}
+
+.soft-shadow {
+	text-shadow: 0px 0px 200px rgba(0, 0, 0, 1);
+}
+
+.left_pane{
+	position: absolute;
+	left: 0%;
+	text-align: right;
+	width: 50%;
+	border-right: 1px solid #000000;
+	padding-right: 10px;
+}
+
+.right_pane{
+	position: absolute;
+	right: 0%;
+	text-align: left;
+	width: 50%;
+	border-left: 1px solid #000000;
+	padding-left: 10px;
+}
+
 footer {
 	position: absolute;
 	bottom: 4px;
 	left: 4px;
+}
+
+.biggerfont {
+	font-size: 50px;
 }
