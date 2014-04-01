@@ -41,7 +41,7 @@ body {
 	text-align: center;
 }
 
-.cover_main_text {
+.bigletterspacing {
 	letter-spacing: 20px;
 }
 
@@ -131,6 +131,16 @@ body {
 	top: 25%;
 }
 
+.about {
+	text-align: center;
+	font-size: 50px;
+	position: absolute;
+	width: 800px;
+	margin-left: -400px;
+	left: 50%;
+	top: 5%;
+}
+
 .dual_panes {
 	height: 100px;
 }
@@ -140,21 +150,27 @@ body {
 }
 
 .left_pane{
-	position: absolute;
 	left: 0%;
 	text-align: right;
-	width: 50%;
 	border-right: 1px solid #000000;
 	padding-right: 10px;
+	width: 50%;
+	float: left;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	box-sizing:border-box;
 }
 
 .right_pane{
-	position: absolute;
 	right: 0%;
 	text-align: left;
-	width: 50%;
 	border-left: 1px solid #000000;
 	padding-left: 10px;
+	width: 50%;
+	float: right;
+	-moz-box-sizing:border-box;
+	-webkit-box-sizing:border-box;
+	box-sizing:border-box;
 }
 
 footer {
