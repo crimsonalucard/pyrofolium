@@ -43,7 +43,7 @@ function keepAspectRatioByAdjustingHeight(aspect, element){
 	//aspect is width/height
 	function adjustHeight(){
 //		var height = getViewPortHeight();
-		var width = getViewPortWidth();
+		var width = element.width();
 		var newHeight = (1/aspect)*width;
 		element.height(Math.floor(newHeight));
 	}
@@ -114,6 +114,10 @@ function createTriangularTextWrappingSpace(element, resolution, angleOfPoint){
 
 }
 
+function linkHeight(element, elementToBeLinked){
+	elementToBeLinked.height(element.height);
+}
+
 //main
 (function(){
 	var maskAspectRatio = 800/402;
@@ -122,4 +126,7 @@ function createTriangularTextWrappingSpace(element, resolution, angleOfPoint){
 	linkElementToViewPortHeight($('.content'));
 	keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.transition'));
 	createTriangularTextWrappingSpace($('#about'), 10);
+
+	keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.center800'));
+	keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.inner-transition'));
 })();

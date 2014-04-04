@@ -80,6 +80,15 @@ body {
 	-webkit-mask-size: 100%;
 }
 
+.center800{
+	width: 800px;
+	margin-left: -400px;
+	position: absolute;
+	left: 50%;
+	bottom: 0%;
+
+}
+
 .triangleMask {
 	-webkit-mask-image: url(../../triangle.png);
 	-webkit-mask-repeat: no-repeat;
@@ -110,7 +119,11 @@ body {
 
 .transition {
 	overflow: hidden;
-	width: 100%;
+	width: 100%;;
+	position: relative;
+}
+
+.transition-small {
 	overflow: hidden;
 	position: relative;
 }
