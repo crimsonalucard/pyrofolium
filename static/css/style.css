@@ -13,7 +13,18 @@
 
 body {
 	font-family: futura, "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #373E44;
 	font-size: 12;
+}
+
+.scrollbutton {
+	width: 50px;
+	left: 50%;
+	margin-left: -25px;
+	position: fixed;
+	bottom: 10%;
+	text-align: center;
+	color: #5e6a74;
 }
 
 #arrow{
@@ -73,12 +84,28 @@ body {
 	background-attachment: fixed;
 	background-repeat: no-repeat;
 	background-position: center;
-	-webkit-mask-image: url(../../arrow.png);
+	-webkit-mask-image: url(../images/arrow.png);
 	-webkit-mask-repeat: no-repeat;
 	-webkit-mask-position-x: 50%;
 	-webkit-mask-position-y: 100%;
 	-webkit-mask-size: 100%;
 }
+
+.hexagonMask{
+	background-color: #D2CCC9;
+	background-image: url("../images/cover_cubes.jpg");
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-position: center;
+	-webkit-mask-image: url(../images/hexagon_small.png);
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-size: auto 100%;
+	-webkit-mask-position-x: 50%;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
+
 
 .center800{
 	width: 800px;
@@ -90,12 +117,45 @@ body {
 }
 
 .triangleMask {
-	-webkit-mask-image: url(../../triangle.png);
+	-webkit-mask-image: url(../images/triangle.png);
 	-webkit-mask-repeat: no-repeat;
 	-webkit-mask-position-x: 50%;
 	-webkit-mask-position-y: 100%;
 	-webkit-mask-size: 100%;
 }
+
+.skillbox {
+	position: relative;
+	left: 50%;
+	margin-left: -8%;
+	width: 16%;
+	text-align: center;
+	bottom: 5%;
+	background-image: url(../images/skillbox.svg);
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+.skillTitle {
+	color: gainsboro;
+	font-size: 30px;
+}
+
+.skillcontainer {
+	width: 100%;
+}
+
+.skilllist {
+	list-style: none;
+	font-size: 20px;
+	color: gainsboro;
+}
+
+.skilllist li {
+	display: inline-block;
+}
+
 
 .blackBG
 {
@@ -115,6 +175,23 @@ body {
 	width: 100%;
 	overflow: hidden;
 	position: relative;
+	padding-top: 5%;
+}
+
+.fakecontent {
+	overflow: hidden;
+	width: 100%;
+	overflow: hidden;
+	position: relative;
+}
+
+.colorringbg {
+	background-image: url(../images/splashring.png);
+	-webkit-background-size: contain;
+    -moz-background-size: contain;
+    -o-background-size: contain;
+    background-size: contain;
+	background-position: top;
 }
 
 .transition {
@@ -147,11 +224,7 @@ body {
 .about {
 	text-align: center;
 	font-size: 50px;
-	position: absolute;
-	width: 70%;
-	top: 10%;
-	left:50%;
-	margin-left: -35%;
+	height: auto;
 }
 
 .dual_panes {
@@ -171,7 +244,7 @@ body {
 .left_pane{
 	left: 0%;
 	text-align: right;
-	border-right: 1px solid #000000;
+	border-right: 1px solid #373E44;
 	padding-right: 10px;
 	width: 50%;
 	float: left;
@@ -183,7 +256,7 @@ body {
 .right_pane{
 	right: 0%;
 	text-align: left;
-	border-left: 1px solid #000000;
+	border-left: 1px solid #373E44;
 	padding-left: 10px;
 	width: 50%;
 	float: right;

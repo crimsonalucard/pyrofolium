@@ -7,19 +7,24 @@
 </head>
 <body class="defaultBG">
 <!--<body>-->
-	<div class="cover_title biggerfont futura_font">
-		<h1 class="bigletterspacing">
-			BRIAN YEH
-		</h1>
-		<div class="clearfix"></div>
-		<div class="cover_sub_text left_pane dense_font">
-			DESIGNER
-		</div>
-		<div class="cover_sub_text right_pane dense_font">
-			DEVELOPER
-		</div>
+<div class="cover_title biggerfont futura_font">
+	<h1 class="bigletterspacing">
+		BRIAN YEH
+	</h1>
 
+	<div class="clearfix"></div>
+	<div class="cover_sub_text left_pane dense_font">
+		DESIGNER
 	</div>
+	<div class="cover_sub_text right_pane dense_font">
+		DEVELOPER
+	</div>
+</div>
+
+<div class="scrollbutton">
+	<h4 class="dense_font">MORE</h4>
+	<img src="static/images/downarrow.svg"/>
+</div>
 <section class="cover">
 	<!--<div class="dual_panes left_pane futura biggerfont soft-shadow">DESIGNER</div>-->
 	<!--<div class="dual_panes right_pane futura biggerfont soft-shadow">ENGINEER</div>-->
@@ -29,41 +34,57 @@
 
 
 <!--This is a transition slide-->
-<section class="transition triangleMask">
-	<div class="center800">
-		<svg id="triangle" width="100%" height="100%">
-			<defs>
-				<mask id="trianglemask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
-					<image width="100%" height="100%" xlink:href="triangle.png"></image>
-				</mask>
-			</defs>
-			<foreignObject width="100%" height="100%"  style="mask: url('#trianglemask');">
-				<section class="inner-transition nocubeBG triangleMask" id="slide2">
-						<svg id="arrow" width="100%" height="100%">
-							<defs>
-								<mask id="arrowmask"  maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
-									<image width="100%" height="100%" xlink:href="arrow.png"></image>
-								</mask>
-							</defs>
-								<foreignObject width="100%" height="100%"  style="mask: url('#arrowmask');">
+<section id="transition-slide1"></section>
 
-							<div class="inner-transition arrowMask"></div>
-						</foreignObject>
-						</svg>
-				</section>
-			</foreignObject>
-		</svg>
+<!--<section class="transition triangleMask">-->
+	<!--<div class="center800">-->
+		<!--<svg id="triangle" width="100%" height="100%">-->
+			<!--<defs>-->
+				<!--<mask id="trianglemask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">-->
+					<!--<image width="100%" height="100%" xlink:href="static/images/triangle.png"></image>-->
+				<!--</mask>-->
+			<!--</defs>-->
+			<!--<foreignObject width="100%" height="100%" style="mask: url('#trianglemask');">-->
+				<!--<section class="inner-transition nocubeBG triangleMask">-->
+					<!--<svg id="arrow" width="100%" height="100%">-->
+						<!--<defs>-->
+							<!--<mask id="arrowmask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">-->
+								<!--<image width="100%" height="100%" xlink:href="static/images/arrow.png"></image>-->
+							<!--</mask>-->
+						<!--</defs>-->
+						<!--<foreignObject width="100%" height="100%" style="mask: url('#arrowmask');">-->
+
+							<!--<div class="inner-transition arrowMask"></div>-->
+						<!--</foreignObject>-->
+					<!--</svg>-->
+				<!--</section>-->
+			<!--</foreignObject>-->
+		<!--</svg>-->
+	<!--</div>-->
+<!--</section>-->
+
+<section id="aboutme" class="content nocubeBG">
+	<div class="about">
+		<h1 class="bigletterspacing margins">ABOUT ME</h1>
+		<h2 class="dense_font margins">"Simplicity is the ultimate sophistication."</h2>
+		<div>
+			<p class="smallerfont nopaddingnomargin" id="about">My name is Brian Yeh. I'm a Software Developer
+			based in California. I graduated from UCLA with a degree in Computer Engineering and I've been working
+			as a developer ever since. I believe in elegance in design and clarity in code. Technologies I
+			specialize in include python, sqlalchemy and nodejs. I have a strong interest in computer languages and
+			technology in general. In my spare time a take a crack at more obscure languages like scheme and erlang.
+			Occasionally, I do freelance work. When I'm not busy coding you'll find
+			me in the great outdoors hiking, camping and exploring.</p>
+		</div>
 	</div>
 </section>
 
-<section class="content nocubeBG">
-	<div class="about">
-		<h1 class="bigletterspacing">ABOUT ME</h1>
-		<h2 class="biggerfont dense_font margins">"Simplicity is the ultimate Sophistication."</h2>
-		<div>
-			<p class="smallerfont nopaddingnomargin" id="about">Hello. My name is Brian Yeh. I'm a Software Developer based in California. I graduated from UCLA with a degree in Computer Engineering and I've been working as a developer ever since. I believe in elegance in design and clarity in code. Technologies I specialize in include python, sqlalchemy and nodejs. I have a strong interest in computer languages and technology in general and in my spare time a take a crack at more obscure languages like scheme and erlang. Occasionally, I do freelance work if I find something interesting. When I'm not busy coding you'll find me in the great outdoors hiking, camping and exploring.</p>
-		</div>
-	</div>
+<section id="transition-slide2"></section>
+<section class="content nocubeBG greyBG" id="skills">
+</section>
+<section id="transition-slide3"></section>
+
+<section class="content greyBG" id="work">
 </section>
 <!--<footer>-->
 <!--<p>&COPY;Copyright 2014 - Brian Yeh Portfolio Website. All rights reserved.</p>-->
