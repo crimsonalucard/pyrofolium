@@ -48,20 +48,40 @@ function verticalCenter(innerElement){
 
 	function syncCenter(){
 		var outerHeight = $(innerElement).parent().height();
+		var innerHeight = $(innerElement).outerHeight();
 
 		$(innerElement).css({
-			top: Math.floor(outerHeight/2),
-			"margin-top": -$(innerElement).height()/2,
-			position: "absolute",
-			padding: "5px"
-		});
+			"top": "50%",
+			"position": "absolute"
+//			"height": innerHeight
+		}).css({
+			"margin-top": Math.ceil(-innerHeight/2)
+		})
 	}
 
 	syncCenter();
 
 	$(window).resize(syncCenter);
+}
+
+function horizontalCenter(innerElement){
+	function syncCenter(){
+		var outerWidth = $(innerElement).parent().width();
+		var innerWidth = $(innerElement).width();
+		$(innerElement).css({
+			"left": "50%",
+			"position": "absolute",
+			"width": innerWidth
+		}).css({
+			"margin-left":-Math.ceil(innerWidth/2)
+		});
 
 
+	}
+
+	syncCenter();
+
+	$(window).resize(syncCenter);
 }
 
 function createTriangularTextWrappingSpace(element, resolution, angleOfPoint){
@@ -75,9 +95,9 @@ function createTriangularTextWrappingSpace(element, resolution, angleOfPoint){
 	function sync(){
 
 		$(".trispacer").remove();
-		var parent = element.parent();
+		var parent = element.parent().parent();
 
-		keepAreaOfElementTheSameByAdjustingHeight(parent, 340000);
+		keepAreaOfElementTheSameByAdjustingHeight(parent, 600000);
 
 		//doubling height
 //		element.height(element.height() *0.64);
@@ -88,7 +108,7 @@ function createTriangularTextWrappingSpace(element, resolution, angleOfPoint){
 		var height = parent.height();
 		var width = parent.width();
 		if (typeof angleOfPoint === 'undefined'){
-			angleOfPoint = Math.PI-2*Math.atan((height*3.1)/width);
+			angleOfPoint = Math.PI-2*Math.atan((height*2.2)/width);
 		}
 
 		var trigConstant = Math.tan((Math.PI-angleOfPoint)/2);
@@ -219,8 +239,29 @@ function createMaskedImage(i, width, backimage, backmask, borderWidth){
 	return div.prop('outerHTML');
 }
 
+function isString(variable){
+	if( Object.prototype.toString.call(variable) == '[object String]') {
+    	return true;
+	}else{
+		return false;
+	}
+}
 
-function createTransitionSlide(aspect, width, element, alpha){
+function createArrowTransitionSlide(aspect, width, element, alpha, backgroundImage, secondBackgroundImage, firstMask, secondMask){
+
+	var negativeHalfWidth =  (-(width/2)).toString()+"px";
+	if(isString(width) && width.slice(-1) === '%'){
+		var widthNum = parseInt(width.slice(0,-1));
+		negativeHalfWidth = (-Math.ceil(widthNum/2)).toString()+'%'
+
+	}
+
+	if(secondBackgroundImage){
+		secondBackgroundImage = "url("+secondBackgroundImage+")";
+	}else{
+		secondBackgroundImage = "url(static/images/no_cube.jpg)";
+	}
+
 
 	var randomID=guid();
 
@@ -232,18 +273,38 @@ function createTransitionSlide(aspect, width, element, alpha){
 	var image = document.createElementNS("http://www.w3.org/2000/svg", 'image');
 	var foreignObject = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
 
+	var firstMaskString = "url(static/images/arrow.png)";
+	var secondMaskString = "url(static/images/triangle.png)";
+	if(firstMask){
+		firstMaskString = "url("+firstMask+")";
+	}
+	else{
+		firstMask = "static/images/arrow.png";
+	}
+	if(secondMask){
+		secondMaskString = "url("+secondMask+")";
+	}
+	else{
+		secondMask = "static/images/triangle.png";
+	}
+
+
 	$(section).css({
 		"overflow":"hidden",
 		"width": "100%",
 		"position": "relative",
-		"-webkit-mask-image": "url(static/images/triangle.png)",
+		"-webkit-mask-image": secondMaskString,
 		"-webkit-mask-repeat": "no-repeat",
 		"-webkit-mask-position-x": "50%",
 		"-webkit-mask-position-y": "100%",
-		"-webkit-mask-size": "100%"
+		"-webkit-mask-size": "100%",
+		"pointer-events": "none",
 	});
 
-	$(section).attr('class', 'js-generated');
+	$(section).attr({
+		'class':'js-generated',
+		'id':$(element).attr("id")
+	});
 
 	function keepAspectByChanggingHeight(element){
 		$(element).height(Math.floor((1/aspect)*getViewPortWidth()));
@@ -258,18 +319,23 @@ function createTransitionSlide(aspect, width, element, alpha){
 
 	$(sizeDiv).css({
 		"width":width,
-		"margin-left": (-(width/2)).toString()+"px",
+		"margin-left": negativeHalfWidth,
 		"position":"absolute",
 		"left":"50%",
-		"bottom":"0%"
+		"bottom":"0%",
+		"pointer-events": "none"
 	});
-
-	$(sizeDiv).height(Math.floor((1/aspect)*width));
+	if(isString(width)){
+		$(sizeDiv).height(Math.floor((1/aspect)*$(window).width()));
+	}else{
+		$(sizeDiv).height(Math.floor((1/aspect)*width));
+	}
 
 	svg = $(svg).attr({
 		height: '100%',
 		width: '100%',
-		id: 'triangle'+randomID
+		id: 'triangle'+randomID,
+		"pointer-events": "none"
 	});
 
 	mask = $(mask).attr({
@@ -283,10 +349,10 @@ function createTransitionSlide(aspect, width, element, alpha){
 	image = $(image).attr({
 		width:"100%",
 		height:"100%",
-		"xlink:href": "static/images/triangle.png"
+		"xlink:href": secondMask
 	});
 
-	 foreignObject = $(foreignObject).attr({
+	foreignObject = $(foreignObject).attr({
 		width:"100%",
 		height:"100%",
 		style:"mask: url(#trianglemask"+randomID+");"
@@ -302,18 +368,20 @@ function createTransitionSlide(aspect, width, element, alpha){
 	var foreignObject1 = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
 	var div1 = document.createElement('div');
 
+
 	$(section1).css({
-		"-webkit-mask-image": "url(static/images/triangle.png)",
+		"-webkit-mask-image": secondMaskString,
 		"-webkit-mask-repeat": "no-repeat",
 		"-webkit-mask-position-x": "50%",
 		"-webkit-mask-position-y": "100%",
 		"-webkit-mask-size": "100%",
 		"background-color": "#D2CCC9",
-		"background-image": "url(static/images/no_cube.jpg)",
+		"background-image": secondBackgroundImage,
 		"background-attachment": 'fixed',
 		"background-repeat": 'no-repeat',
 		"background-size": "100%",
-		"background-position": "top"
+		"background-position": "top",
+		"pointer-events": "none"
 	});
 
 	$(section1).height(Math.floor((1/aspect)*width));
@@ -322,7 +390,8 @@ function createTransitionSlide(aspect, width, element, alpha){
 	svg1 = $(svg1).attr({
 		height: '100%',
 		width: '100%',
-		id: "arrow"
+		id: "arrow",
+		"pointer-events": "none"
 	});
 
 	mask1 = $(mask1).attr({
@@ -336,7 +405,7 @@ function createTransitionSlide(aspect, width, element, alpha){
 	image1 = $(image1).attr({
 		width:"100%",
 		height:"100%",
-		"xlink:href": "static/images/arrow.png"
+		"xlink:href":firstMask
 	});
 
 	foreignObject1 = $(foreignObject1).attr({
@@ -345,17 +414,23 @@ function createTransitionSlide(aspect, width, element, alpha){
 		style:"mask: url(#arrowmask"+randomID+");"
 	});
 
+	var backgroundString =  'url(static/images/cover_cubes.jpg)';
+	if(backgroundImage){
+		backgroundString = 'url('+backgroundImage+')';
+	}
+
 	$(div1).css({
 		"background-color": "#D2CCC9",
-		"background-image": 'url(static/images/cover_cubes.jpg)',
+		"background-image": backgroundString,
 		"background-attachment": 'fixed',
 		"background-repeat": 'no-repeat',
 		"background-position": 'center',
-		"-webkit-mask-image": "url(static/images/arrow.png)",
+		"-webkit-mask-image": firstMaskString,
 		"-webkit-mask-repeat": 'no-repeat',
 		"-webkit-mask-position-x": "50%",
 		"-webkit-mask-position-y": "100%",
-		"-webkit-mask-size": "100%"
+		"-webkit-mask-size": "100%",
+		"pointer-events": "none"
 	});
 
   	$(div1).height(Math.floor((1/aspect)*width));
@@ -459,7 +534,11 @@ function createHexagonChain(element, amount, borderWidth){
 
 function fixedPositionOnScrollPast(element){
 	var placeholderElement = document.createElement('div');
-	$(placeholderElement).height(element.height()).width(element.width()).css("position","relative");
+	$(placeholderElement).height(element.height()).width(element.width()).css({
+		"position":"relative",
+		"pointer-events": "none"
+	});
+
 	var scrollMarker = element.offset().top;
 	var initialScrollPosition;
 
@@ -512,6 +591,39 @@ function keepAreaOfElementTheSameByAdjustingHeight(element, area){
 	$(element).height(Math.ceil(area/$(element).width()));
 }
 
+function scrollPastAndHandle(element, elementTrigger, handlerDown, handlerUp){
+	var marker;
+	var initialScrollPoint = $(document).scrollTop();
+	if(elementTrigger){
+		marker = $(elementTrigger).offset().top;
+	}
+	else{
+		marker = $(element).offset().top;
+	}
+
+	function scrollDownPastHandler(){
+		if($(document).scrollTop() > marker){
+			$(window).unbind("scroll", scrollDownPastHandler);
+			$(window).scroll(scrollUpPastHandler);
+			handlerDown();
+		}
+	}
+
+	function scrollUpPastHandler(){
+		if($(document).scrollTop() <= marker){
+			$(window).unbind("scroll", scrollUpPastHandler);
+			$(window).scroll(scrollDownPastHandler);
+			handlerUp();
+		}
+	}
+
+	if(initialScrollPoint <= marker){
+		$(window).scroll(scrollDownPastHandler);
+	}
+	else {
+		$(window).scroll(scrollUpPastHandler);
+	}
+}
 
 function scrollPastAndSlideUp(element, aspect, elementTrigger){
 
@@ -527,8 +639,6 @@ function scrollPastAndSlideUp(element, aspect, elementTrigger){
 		marker = $(element).offset().top;
 		heightToBeMoved = -2*Math.ceil((1/aspect)*$(element).width());
 	}
-	console.log(aspect);
-	console.log($(element).width());
 
 	function scrollDownPastHandler(){
 		if($(document).scrollTop() > marker){
@@ -564,17 +674,311 @@ function scrollPastAndSlideUp(element, aspect, elementTrigger){
 	}
 }
 
-function coreSkills(element){
-	var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-	$(element).children();
+function wheel(input, limit){
+
+	var finalValue = input;
+
+	if(input>=limit){
+		finalValue = input%limit;
+	}
+	else if(input < 0 && input > -limit){
+		finalValue = limit + input;
+	}else if(input < -limit){
+		finalValue = limit - (-input)%limit;
+	}
+	return finalValue;
 }
 
-function drawArc(radius, width, height, startingAngle, angle){
+function normalDistribution(x, mean, standdev){
+	return Math.exp(-(x-mean)*(x-mean)/(2*standdev*standdev))/(standdev*Math.sqrt(2*Math.PI));
+}
+
+function coreSkillsSlide(element, radius, thickness, resolution){
+
+	////-note to self this function is unreadable.. fix later.
+	//note width and height must be in pixels units!!
+	var width = window.innerWidth;
+	var height= window.innerHeight;
+
+	var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+
+	$(svg).attr({
+		"width":width,
+		"height":height
+	});
+
+	$(svg).css({
+		"position":"absolute",
+		"left": "50%",
+		"top":"50%",
+		"margin-top":-Math.ceil(height/2),
+		"margin-left":-Math.ceil(width/2)
+	});
+
+	//make a soft gradient to create depth...
+	var rect =  document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+	$(rect).attr({
+		fill:"url(#radial)",
+		width:"100%",
+		height:"100%"
+	});
+
+	var stop0 = document.createElementNS("http://www.w3.org/2000/svg", 'stop');
+	var stop1 = document.createElementNS("http://www.w3.org/2000/svg", 'stop');
+
+
+	var radialGradient = document.createElementNS("http://www.w3.org/2000/svg", 'radialGradient');
+	$(radialGradient).attr({
+		cx:"50%",
+		cy:"50%",
+		r:"50%",
+		fx:"50%",
+		fy:"50%",
+		id:"radial"
+	});
+	$(svg).append(radialGradient).append(rect);
+
+
+	var arcObjectArray = Array();
+	for(var index = 0; index < resolution; index++){
+		var startAngle = ((2*Math.PI)/resolution)*index;
+		var endAngle =  (((2*Math.PI)/resolution)*(index+1));
+		var color = colorCycler(index*(255*3)/(resolution));
+		arcObjectArray[index] = drawArc(radius, width, height, startAngle, endAngle, 0, color, "colorCircle"+index.toString(), "colorCircle");
+		$(svg).append(arcObjectArray[index].path);
+	 }
+
+	$(element).after(svg);
+
+	function initializeRing(totalMilliseconds){
+		return function(){
+			for(var index = 0; index < resolution; index++){
+					$("#colorCircle"+index.toString()).delay(index*totalMilliseconds/resolution).animate(
+						{
+							"stroke-width":thickness
+						},
+						{
+							"complete":function(){
+								if($(this).index() === resolution-1){
+									startWaveOnHover();
+								}
+							},
+							"always":function(){
+								$(this).animate({
+									"stroke-width":thickness
+								});
+							},
+							"progress":function(promise, progress, remainingM){
+//								var idNum = $(this).index();
+//
+//								$(this).attr({
+//									"transform":"rotate("+remainingM/2+", "+arcObjectArray[idNum].x+", "+arcObjectArray[idNum].y+")"
+//										+ "translate("+remainingM/2 +", "+remainingM/2+")"
+//
+//								});
+							},
+							"duration":200
+						}
+					);
+			 }
+		}
+	}
+
+	function deinitilializeRing(){
+		console.log("deinit!");
+		$(".colorCircle").off();
+		$(".colorCircle").stop(true, false).animate({
+			"stroke-width":0
+		});
+	}
+
+	function makeListInvisible(){
+		$(element).children('ul').children('li').dequeue().fadeTo(1, 0);
+	}
+	makeListInvisible();
+
+	function lockscrolling(){
+		// lock scroll position, but retain settings for later
+		var scrollPosition = [
+		self.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
+		self.pageYOffset || document.documentElement.scrollTop  || document.body.scrollTop
+		];
+		var html = jQuery('html'); // it would make more sense to apply this to body, but IE7 won't have that
+		html.data('scroll-position', scrollPosition);
+		html.data('previous-overflow', html.css('overflow'));
+		html.css('overflow', 'hidden');
+		window.scrollTo(scrollPosition[0], scrollPosition[1]);
+	}
+
+	function unlockscrolling(){
+	  // un-lock scroll position
+      var html = jQuery('html');
+      var scrollPosition = html.data('scroll-position');
+      html.css('overflow', html.data('previous-overflow'));
+      window.scrollTo(scrollPosition[0], scrollPosition[1])
+	}
+
+	function listOutElements(delay, callbackOnComplete){
+		//let it only run once!
+		var triggered = false;
+
+		return function(){
+			if(triggered === false)
+			{
+				lockscrolling();
+				triggered = true;
+				$("#skills").off();
+				$(element).children('ul').children('li').dequeue();
+				makeListInvisible();
+				var accumulator = 0;
+				$(element).children('ul').children('li').each(function(index, element){
+					accumulator += delay;
+					var copy = accumulator;
+					$(element).delay(copy).fadeTo(400, 1);
+				});
+				setTimeout(callbackOnComplete, accumulator);
+				setTimeout(unlockscrolling, accumulator+500);
+			}
+
+		}
+	}
+
+//	console.log($("#transition-slide3"));
+//	scrollPastAndHandle($('#skills'), $("#transition-slide2"),  function(){ deinitilializeRing(); makeListInvisible();}, listOutElements(400, initializeRing(500)));
+//	scrollPastAndHandle($("#skills"), $("#skills"), listOutElements(400, initializeRing(500)), deinitilializeRing);
+//	scrollPastAndHandle($("#skills"), $("#transition-slide3"), function(){ deinitilializeRing(); makeListInvisible();},  listOutElements(400, initializeRing(500)));
+	scrollPastAndHandle($("#skills"), $('#skills'), listOutElements(200, initializeRing(500)), function(){/*do nothing*/});
+
+
+//	function bulgeOnHover(){
+////		This just provided a sort of bulge effect on the circle
+////		I am canning this in favor of a wave effect function.
+//		$(".colorCircle").each(function(index, element){
+//			$(element).mouseenter(
+//				function(){
+//					$(".colorCircle").stop(true, false);
+//					var id = $(element).attr("id");
+//					var idNum = parseInt(id.slice(11));
+//
+//					$(element).animate({
+//						"stroke-width":4*radius*normalDistribution(0,0,6)+thickness
+//					}, 100);
+//
+//
+//					for(var i = 0; i<hoverExtend; i++){
+//						var iinc = i+1;
+//						var reductionConstant = 4*normalDistribution(iinc, 0, 6);
+//						var newID1 = "#colorCircle" + wheel(idNum+iinc, resolution);
+//						var newID2 = "#colorCircle" + wheel(idNum-iinc, resolution);
+//						$(newID1).animate({
+//							"stroke-width":radius*reductionConstant+thickness
+//						}, 100);
+//						$(newID2).animate({
+//							"stroke-width":radius*reductionConstant+thickness
+//						}, 100);
+//					}
+//
+//				}).mouseleave(
+//					function(){
+//						console.log("unbulging!");
+//						$(".colorCircle").stop(true, false);
+//						$(".colorCircle").animate({
+//							"stroke-width":thickness
+//						}, 800);
+//					}
+//			);
+//		});
+//	}
+
+
+//	function makeCircleDotted(){
+//		$(".colorCircle").each(function(index, element){
+//			if(index%2===0){
+//				$(this).animate({"stroke-opacity":0});
+//			}
+//		});
+//	}
+//
+//	function makeCircleSolid(){
+//		$(".colorCircle").animate({"stroke-opacity":1});
+//	}
+
+	function startWaveOnHover(){
+		function wavefront(event, growthHeight, delay, transferDelay, decayFunction, id, goingRight){
+			if(growthHeight < thickness){
+				return;
+			}
+
+			$("#colorCircle"+id).stop(true, false).animate({
+				"stroke-width":growthHeight//+parseInt($("#colorCircle"+id).css("stroke-width").slice(0,-2))
+			},
+			{
+				"start":function(){
+					$(this).delay(delay).animate({
+				    	"stroke-width":thickness
+					});
+
+					var nextId;
+					if(goingRight){
+						nextId = wheel(id+1, resolution);
+					}
+					else{
+						nextId = wheel(id-1, resolution);
+					}
+
+					setTimeout(function(){
+						wavefront(event, decayFunction(growthHeight), delay, transferDelay, decayFunction, nextId, goingRight);
+					}, transferDelay);
+				},
+				"duration":25
+			}
+			);
+		}
+
+		$(".colorCircle").each(function(index, element){
+			 $(element).mouseover(function(){
+				var idNum =  parseInt($(this).attr("id").slice(11));
+				var decayFunction = function(x){return x*0.95;};
+				$("#colorCircle"+idNum).stop(true, false).animate({
+					"stroke-width":radius/3
+				},{
+					"start":function(){
+						$(this).animate({
+							"stroke-width":thickness
+						});
+					},
+					"duration":25
+				});
+				wavefront(null, decayFunction(radius/3), 10, 10, decayFunction, wheel(idNum+1, resolution), true);
+				wavefront(null, decayFunction(radius/3), 10, 10, decayFunction, wheel(idNum-1, resolution), false);
+			 });
+		});
+	}
+}
+
+function colorCycler(colorLevel){
+	//color must be a number from zero to 255*3
+
+	if(colorLevel>255*3){
+		colorLevel = colorLevel%(255*3);
+	}
+
+	if(colorLevel < 255){
+		return "rgb("+Math.floor(255-colorLevel).toString()+", "+Math.floor(colorLevel).toString()+", 0)";
+	}else if(colorLevel >= 255 && colorLevel < 2*255){
+		return "rgb(0, "+Math.floor(255-(colorLevel-255)).toString()+", "+Math.floor(colorLevel-255).toString()+")";
+	}else if(colorLevel >=  2*255){
+		return "rgb("+Math.floor(colorLevel-(255*2)).toString()+", 0, "+Math.floor(255-(colorLevel-(255*2))).toString()+")";
+	}
+
+}
+
+function drawArc(radius, width, height, startingAngle, angle, thickness, color, id, className){
 	function findAngleX(angle){
 		return width/2 + radius*Math.sin(angle);
 	}
 
-	function findAngleY(angle, color, thickness){
+	function findAngleY(angle){
 		return height/2 - radius*Math.cos(angle);
 	}
 
@@ -583,40 +987,71 @@ function drawArc(radius, width, height, startingAngle, angle){
 	var y1 = findAngleY(startingAngle);
 	var y2 = findAngleY(angle);
 	var path =  document.createElementNS("http://www.w3.org/2000/svg", 'path');
-	$(path).attr({
-		"d":"M "+x1.toString()+" "+y1.toString()+", A "+x2.toString()+" "+y2.toString(),
-		"fill":"none",
-		"stroke-width":thickness,
-		"stroke":color
-	});
-	return path
+	path.setAttribute("d", "M "+x1.toString()+" "+y1.toString()+" A"+radius.toString()+" "+radius.toString()+" 0 0 1 "+x2.toString()+" "+y2.toString());
+	path.setAttribute("fill", "none");
+	path.setAttribute("stroke-width", thickness);
+	path.setAttribute("stroke", color);
+	path.setAttribute("id",id);
+	path.setAttribute("class",className);
+
+	return {
+		"path":path,
+		"x":x1,
+		"y":y1
+	};
+
+
 }
 
-function addSpecialEffects(){
+function createTriangleTransitionSlide(element, color){
+	function sync(){
+		var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
 
+		$(svg).attr({
+			"width":$(window).width(),
+			"height":$(window).height()
+		});
+		$(svg).css({
+			"pointer-events":"none"
+		})
+		var path =  document.createElementNS("http://www.w3.org/2000/svg", 'path');
+		$(path).attr({
+			"fill":color,
+			"d":"M0, "+$(window).height()+" L"+$(window).width()/2+", "+$(window).height()*0.65+" L"+$(window).width()+", "+$(window).height()+" Z"
+		});
+
+		$(svg).append(path);
+		$(element).html("");
+		$(element).append(svg);
+	}
+	sync();
+	$(window).resize(sync);
 }
-
 
 //main
 (function(){
-	var maskAspectRatio = 800/402;
-	var backGroundAspectRatio = 1920/1426;
-
-
-	console.log("javascript initialized!");
-	linkElementToViewPortHeight($('.cover'));
-	linkElementToViewPortHeight($('.content'));
-	keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.transition'));
-	createTriangularTextWrappingSpace($('#about'), 25);
-	keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.center800'));
-	keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.inner-transition'));
-	createTransitionSlide(maskAspectRatio, 800, $("#transition-slide1"));
-	createTransitionSlide(maskAspectRatio, 800, $("#transition-slide2"));
-	createTransitionSlide(maskAspectRatio, 800, $("#transition-slide3"), false);
-	fixedPositionOnScrollPast($("#aboutme"));
-	createHexagonChain($("#work"),7, 10);
-	fixedPositionOnScrollPast($("#skills"));
-	scrollPastAndSlideUp($("#skills"), backGroundAspectRatio);
-	scrollPastAndSlideUp($('#transition-slide2'), backGroundAspectRatio, $('#skills'));
-	scrollPastAndSlideUp($("#aboutme"), backGroundAspectRatio, $("#skills"));
+	$(document).ready(function(){
+		var maskAspectRatio = 800/402;
+		var backGroundAspectRatio = 1920/1426;
+		console.log("javascript initialized!");
+		linkElementToViewPortHeight($('.cover'));
+		linkElementToViewPortHeight($('.content'));
+		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.transition'));
+		createTriangularTextWrappingSpace($('#about'), 15);
+		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.center800'));
+		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.inner-transition'));
+		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide1"));
+		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide2"));
+		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide3"), false);
+		fixedPositionOnScrollPast($("#aboutme"));
+		createHexagonChain($("#work"),7, 10);
+		fixedPositionOnScrollPast($("#skills"));
+		fixedPositionOnScrollPast($("#work"));
+		scrollPastAndSlideUp($("#skills"), backGroundAspectRatio);
+		scrollPastAndSlideUp($('#transition-slide2'), backGroundAspectRatio, $('#skills'));
+		scrollPastAndSlideUp($("#aboutme"), backGroundAspectRatio, $("#skills"));
+		coreSkillsSlide($("#coreskills"), 200, 2, 200, 50);
+		horizontalCenter($("#coreskills"));
+		createTriangleTransitionSlide($("#transition-slide4"), "#2D2D3D");
+	});
 })();

@@ -17,6 +17,10 @@ body {
 	font-size: 12;
 }
 
+.no-hover-events{
+	pointer-events:none;
+}
+
 .scrollbutton {
 	width: 50px;
 	left: 50%;
@@ -25,6 +29,38 @@ body {
 	bottom: 10%;
 	text-align: center;
 	color: #5e6a74;
+}
+
+.straycubesbg {
+	background-image:url("../images/footerrender2.png");
+	background-size: cover;
+	background-position: center;
+	/*background-attachment: fixed;*/
+	background-repeat: no-repeat;
+}
+
+.bluetriangleBG {
+	background-image:url("../images/bluetriangle.svg");
+	background-size: 100%;
+	background-position: center;
+	/*background-attachment: fixed;*/
+	background-repeat: no-repeat;
+}
+
+#coreskills {
+	text-align: center;
+	top: 50%;
+	height: 296px;
+	margin-top: -148px;
+}
+
+#skilltitle {
+	position: absolute;
+	width: 800px;
+	top: 10%;
+	margin-left: -380px;
+	left: 50%;
+	text-align: center;
 }
 
 #arrow{
@@ -52,8 +88,31 @@ body {
 	text-align: center;
 }
 
+.paleborder{
+	border-color: #BAB1B9;
+}
+
+.darkborder{
+	border-color: #373E44;
+}
+
+.darkfont{
+	color: #373E44;
+}
+
+.footer_title {
+	position: absolute;
+	width: 800px;
+	top: 20%;
+	margin-left: -400px;
+	left: 50%;
+	text-align: center;
+}
+
 .bigletterspacing {
 	letter-spacing: 20px;
+	margin-left: 20px;
+	display: inline-block;
 }
 
 .cover_sub_text{
@@ -175,6 +234,17 @@ body {
 	width: 100%;
 	overflow: hidden;
 	position: relative;
+}
+
+.no-pointer-events{
+	pointer-events:none;
+}
+
+.palefont{
+	color: #BAB1B9;
+}
+
+.padtop{
 	padding-top: 5%;
 }
 
@@ -244,7 +314,7 @@ body {
 .left_pane{
 	left: 0%;
 	text-align: right;
-	border-right: 1px solid #373E44;
+	border-right: 1px solid;
 	padding-right: 10px;
 	width: 50%;
 	float: left;
@@ -256,7 +326,7 @@ body {
 .right_pane{
 	right: 0%;
 	text-align: left;
-	border-left: 1px solid #373E44;
+	border-left: 1px solid;
 	padding-left: 10px;
 	width: 50%;
 	float: right;
@@ -273,6 +343,10 @@ footer {
 
 .biggerfont {
 	font-size: 50px;
+}
+
+.mediumfont {
+	font-size: 35px;
 }
 
 .smallerfont {

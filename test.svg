@@ -1,4 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg">
-    <circle r="25%" cx="30%" cy="50%" fill="lightgreen" stroke="#e60" stroke-width="25"/>
-    <circle r="25%" cx="50%" cy="50%" fill="none" stroke="#e60" stroke-width="25"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="800" height="800"><path d="M 400, 300 A485, 346" fill="none" stroke-width="30" stroke="black"/><path d="M 485, 346 A491, 442" fill="none" stroke-width="30" stroke="#200000"></path><path d="M 491, 442 A415, 499" fill="none" stroke-width="30" stroke="#400000"></path><path d="M 415, 499 A325, 466" fill="none" stroke-width="30" stroke="#600000"></path><path d="M 325, 466 A325, 466" fill="none" stroke-width="30" stroke="#800000"></path><path d="M 325, 466 A305, 372" fill="none" stroke-width="30" stroke="#a00000"></path><path d="M 305, 372 A373, 304" fill="none" stroke-width="30" stroke="#c00000"></path><path d="M 373, 304 A466, 325" fill="none" stroke-width="30" stroke="#e00000"></path><path stroke="darkslategray" stroke-width="6" fill="none"
+  stroke-linecap="round"
+  d="M 400, 300 A485, 346" /></svg>
