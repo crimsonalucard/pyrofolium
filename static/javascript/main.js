@@ -2,6 +2,23 @@
  * Created by brian on 3/9/14.
  */
 
+//animate bgposition jquery plugin
+$.fn.animateBG = function(x, y, speed) {
+    var pos = this.css('background-position').split(' ');
+    this.x = pos[0] || 0,
+    this.y = pos[1] || 0;
+
+    $.Animation( this, {
+        x: x,
+        y: y
+      }, {
+        duration: speed
+      }).progress(function(e) {
+          this.css('background-position', e.tweens[0].now+'px '+e.tweens[1].now+'px');
+    });
+    return this;
+}
+
 function guid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -298,7 +315,7 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		"-webkit-mask-position-x": "50%",
 		"-webkit-mask-position-y": "100%",
 		"-webkit-mask-size": "100%",
-		"pointer-events": "none",
+		"pointer-events": "none"
 	});
 
 	$(section).attr({
@@ -465,10 +482,9 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 
 function createHexagonChain(element, amount, borderWidth){
 	var width = element.parent().width();
-	var hexagonWidth = (width-((amount*borderWidth)+1))/amount;
+	var hexagonWidth = (width-((amount*borderWidth)+1))/amount/2;
 	var hexagonHeight = hexagonWidth*Math.sqrt(3)/2;
-	var chainWidth = Math.ceil(amount*(hexagonWidth - hexagonWidth/4) + (amount+1)*borderWidth);
-
+	var chainWidth = Math.ceil(amount*(hexagonWidth - hexagonWidth/4) + (amount+2)*borderWidth);
 	var container = document.createElement('div');
 	$(container).width(chainWidth).height(Math.ceil(hexagonHeight*1.5)).css({
 		position: "absolute",
@@ -484,6 +500,8 @@ function createHexagonChain(element, amount, borderWidth){
 			"static/images/cover_cubes.jpg",
 			"static/images/hexagon_small.png",
 			borderWidth);
+
+		$(hexagon).attr('id', 'hexagon'+i.toString());
 
 		$(container).html(
 			$(container).html() + hexagon
@@ -506,26 +524,121 @@ function createHexagonChain(element, amount, borderWidth){
 		return hexagons;
 	})(amount, "hexagonmask");
 
+	function BulgeEffectOnHexagons(originElement, prevElementHeight, prevElementWidth, originalWidth, originalHeight, limit, decayFunction, inverseDecayFunction, accumalatedXOffset, accumulatedYOffset, right){
+		var indexOfOrigin = $(originElement).index();
+		if( indexOfOrigin>=limit || indexOfOrigin<0)
+		{
+			return;
+		}
 
+
+		var newHeight = decayFunction(prevElementHeight);
+		var newWidth = decayFunction(prevElementWidth);
+
+		var currentIndex = $(originElement).index();
+
+		var currentYOffset = parseInt($(originElement).css("top").slice(0,-2));
+		var shiftYOffset = -(newHeight-originalHeight)/2;
+
+		var finalYOffset = currentYOffset + shiftYOffset;
+
+		var currentXOffset = parseInt($(originElement).css("left").slice(0,-2));
+		var shiftXOffset = right === true? -(newWidth-originalWidth)/2 : (newWidth-originalWidth)/2;
+
+		var finalXOffset =  currentXOffset + shiftXOffset + accumalatedXOffset;
+		accumalatedXOffset -= shiftXOffset;
+
+
+
+		$(originElement).stop(true, false).animate({
+			height:newHeight,
+			width:newWidth,
+			left:finalXOffset,
+			top: finalYOffset
+		});
+
+
+		//var indexOfNext = right===true? indexOfOrigin+1 : indexOfOrigin-1;
+		var nextElement = right===true ? $(originElement).next() : $(originElement).prev();
+
+		BulgeEffectOnHexagons(nextElement, newHeight, newWidth, originalWidth, originalHeight, limit, decayFunction, inverseDecayFunction, accumalatedXOffset, accumulatedYOffset, right);
+
+	}
+
+	var sizeIncrease = 3;
 	$(".hexagon").each(function(index, element){
 
 		var originalWidth = $(element).width();
-		var orginalHeight = $(element).height();
+		var originalHeight = $(element).height();
+		var originalXOffset = parseInt($(element).css('left').slice(0,-2));
+		var originalYOffset = parseInt($(element).css('top').slice(0,-2));
+		var centerXoffset = originalWidth*(sizeIncrease-1)/2;
+		var centerYoffset = originalHeight*(sizeIncrease-1)/2;
+		var totalXoffset = originalXOffset-centerXoffset;
+		var totalYoffset = originalYOffset-centerYoffset;
+		$.data(element, "originalXOffset", originalXOffset);
+		$.data(element, "originalYOffset", originalYOffset);
 
 		$(element).mouseover(function(eventObject){
-			$(element).animate({
-				height:orginalHeight*3,
-				width:originalWidth*3
+			$(element).css({
+				"z-index":99
+			}).stop(true, false).animate({
+				height:originalHeight*sizeIncrease,
+				width:originalWidth*sizeIncrease,
+				left:totalXoffset,
+				top:totalYoffset
+			},{
+				"start":function(){
+
+					function decay(input){
+						return input*0.75;
+					}
+
+					function inverseDecay(input){
+						return input/0.75;
+					}
+					BulgeEffectOnHexagons(
+						$(this).next(),
+						originalHeight*sizeIncrease,
+						originalWidth*sizeIncrease,
+						originalWidth,
+						originalHeight,
+						amount,
+						decay,
+						inverseDecay,
+						centerXoffset,
+						$(this).index()%2===0? -centerYoffset : centerYoffset,
+						true
+					);
+//					BulgeEffectOnHexagons(
+//						$(this).prev(),
+//						originalHeight*sizeIncrease,
+//						originalWidth*sizeIncrease,
+//						originalWidth,
+//						originalHeight,
+//						amount,
+//						decay,
+//						inverseDecay,
+//						totalXoffset,
+//						false
+//					);
+				}
 			});
 		});
 
 		$(element).mouseout(function(eventObject){
-			$(element).animate({
-				height:orginalHeight,
-				width:originalWidth
+			//reset the size and offset of every hexagon...
+					$(".hexagon").css("z-index", 98).each(function(index, element){
+						$(element).animate({
+							left: $.data(element, "originalXOffset"),
+							top: $.data(element, "originalYOffset"),
+							width: originalWidth,
+							height: originalHeight
+						})
+					});
+
 			});
 		});
-	});
 
 
 
@@ -602,7 +715,7 @@ function scrollPastAndHandle(element, elementTrigger, handlerDown, handlerUp){
 	}
 
 	function scrollDownPastHandler(){
-		if($(document).scrollTop() > marker){
+		if($(document).scrollTop() >= marker){
 			$(window).unbind("scroll", scrollDownPastHandler);
 			$(window).scroll(scrollUpPastHandler);
 			handlerDown();
@@ -641,12 +754,13 @@ function scrollPastAndSlideUp(element, aspect, elementTrigger){
 	}
 
 	function scrollDownPastHandler(){
-		if($(document).scrollTop() > marker){
+		if($(document).scrollTop() >= marker){
 			$(window).unbind("scroll", scrollDownPastHandler);
 			$(window).scroll(scrollUpPastHandler);
-			$(element).animate({
-				"background-position-y":heightToBeMoved.toString()+"px"
-			}, 400);
+//			$(element).animate({
+//				"background-position-y":heightToBeMoved.toString()+"px"
+//			}, 400);
+			$(element).css({"background-position": "0 0"}).stop(true, false).animateBG(0, heightToBeMoved, 2000);
 		}
 	}
 
@@ -654,21 +768,19 @@ function scrollPastAndSlideUp(element, aspect, elementTrigger){
 		if($(document).scrollTop() <= marker){
 			$(window).unbind("scroll", scrollUpPastHandler);
 			$(window).scroll(scrollDownPastHandler);
-			$(element).animate({
-				"background-position-y":"0px"
-			});
+			$(element).css({"background-position": "0 "+heightToBeMoved}).stop(true, false).animateBG(0, 0, 2000);
 		}
 	}
 
 	if(initialScrollPoint <= marker){
 		$(element).css({
-			"background-position-y":"0px"
+			"background-position":"0 0"
 		});
 		$(window).scroll(scrollDownPastHandler);
 	}
 	else {
 		$(element).css({
-			"background-position-y":heightToBeMoved.toString()+"px"
+			"background-position-y":"0 "+heightToBeMoved.toString()
 		});
 		$(window).scroll(scrollUpPastHandler);
 	}
@@ -687,6 +799,12 @@ function wheel(input, limit){
 		finalValue = limit - (-input)%limit;
 	}
 	return finalValue;
+}
+
+function cliff(input, limit){
+	if(input<0 ||input>=limit){
+		throw "You reached an index that doesn't exist. Error."
+	}
 }
 
 function normalDistribution(x, mean, standdev){
@@ -785,7 +903,6 @@ function coreSkillsSlide(element, radius, thickness, resolution){
 	}
 
 	function deinitilializeRing(){
-		console.log("deinit!");
 		$(".colorCircle").off();
 		$(".colorCircle").stop(true, false).animate({
 			"stroke-width":0
@@ -1028,6 +1145,30 @@ function createTriangleTransitionSlide(element, color){
 	$(window).resize(sync);
 }
 
+function scrolling(){
+	function scrollTo(element){
+		return function(){
+			$('html, body').animate({
+				scrollTop: $(element).offset().top
+			}, 2000);
+		}
+	}
+
+	$(".scrollbutton").hover(function(){
+		$(this).css({
+			'cursor':"pointer"
+		})
+	},function(){
+		$(this).css({
+			'cursor':"default"
+		})
+	});
+	$("#scrollbutton1").click(scrollTo($("#aboutme")));
+	$("#scrollbutton2").click(scrollTo($("#skills")));
+	$("#scrollbutton3").click(scrollTo($("#work")));
+	$("#scrollbutton4").click(scrollTo($("#contact")));
+}
+
 //main
 (function(){
 	$(document).ready(function(){
@@ -1048,10 +1189,11 @@ function createTriangleTransitionSlide(element, color){
 		fixedPositionOnScrollPast($("#skills"));
 		fixedPositionOnScrollPast($("#work"));
 		scrollPastAndSlideUp($("#skills"), backGroundAspectRatio);
-		scrollPastAndSlideUp($('#transition-slide2'), backGroundAspectRatio, $('#skills'));
-		scrollPastAndSlideUp($("#aboutme"), backGroundAspectRatio, $("#skills"));
+//		scrollPastAndSlideUp($('#transition-slide2'), backGroundAspectRatio, $('#skills'));
+//		scrollPastAndSlideUp($("#aboutme"), backGroundAspectRatio, $("#skills"));
 		coreSkillsSlide($("#coreskills"), 200, 2, 200, 50);
 		horizontalCenter($("#coreskills"));
 		createTriangleTransitionSlide($("#transition-slide4"), "#2D2D3D");
+		scrolling();
 	});
 })();
