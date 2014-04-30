@@ -540,7 +540,8 @@ function createHexagonChain(element, amount, borderWidth){
 		var currentYOffset = parseInt($(originElement).css("top").slice(0,-2));
 		var shiftYOffset = -(newHeight-originalHeight)/2;
 
-		var finalYOffset = currentYOffset + shiftYOffset;
+		var finalYOffset = currentYOffset + shiftYOffset + accumulatedYOffset;
+		accumulatedYOffset = currentIndex%2===0? accumulatedYOffset+shiftYOffset : accumulatedYOffset-shiftYOffset;
 
 		var currentXOffset = parseInt($(originElement).css("left").slice(0,-2));
 		var shiftXOffset = right === true? -(newWidth-originalWidth)/2 : (newWidth-originalWidth)/2;
@@ -610,18 +611,19 @@ function createHexagonChain(element, amount, borderWidth){
 						$(this).index()%2===0? -centerYoffset : centerYoffset,
 						true
 					);
-//					BulgeEffectOnHexagons(
-//						$(this).prev(),
-//						originalHeight*sizeIncrease,
-//						originalWidth*sizeIncrease,
-//						originalWidth,
-//						originalHeight,
-//						amount,
-//						decay,
-//						inverseDecay,
-//						totalXoffset,
-//						false
-//					);
+					BulgeEffectOnHexagons(
+						$(this).prev(),
+						originalHeight*sizeIncrease,
+						originalWidth*sizeIncrease,
+						originalWidth,
+						originalHeight,
+						amount,
+						decay,
+						inverseDecay,
+						centerXoffset,
+						$(this).index()%2===0? -centerYoffset : centerYoffset,
+						false
+					);
 				}
 			});
 		});
