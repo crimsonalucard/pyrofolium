@@ -537,17 +537,22 @@ function createHexagonChain(element, amount, borderWidth){
 
 		var currentIndex = $(originElement).index();
 
-		var currentYOffset = parseInt($(originElement).css("top").slice(0,-2));
+		//var currentYOffset = parseInt($(originElement).css("top").slice(0,-2));
+		var currentYOffset =  $.data($(originElement)[0], "originalYOffset");
 		var shiftYOffset = -(newHeight-originalHeight)/2;
 
 		var finalYOffset = currentYOffset + shiftYOffset + accumulatedYOffset;
 		accumulatedYOffset = currentIndex%2===0? accumulatedYOffset+shiftYOffset : accumulatedYOffset-shiftYOffset;
 
-		var currentXOffset = parseInt($(originElement).css("left").slice(0,-2));
-		var shiftXOffset = right === true? -(newWidth-originalWidth)/2 : (newWidth-originalWidth)/2;
+//		var currentXOffset = parseInt($(originElement).css("left").slice(0,-2));
+		var currentXOffset = $.data($(originElement)[0], "originalXOffset");
+		console.log($(originElement).css("left").slice(0,-2));
+		console.log(originElement);
 
-		var finalXOffset =  currentXOffset + shiftXOffset + accumalatedXOffset;
-		accumalatedXOffset -= shiftXOffset;
+
+		var shiftXOffset = right === true? (newWidth-originalWidth)/2 : -(newWidth-originalWidth)/2;
+		accumalatedXOffset += shiftXOffset;
+		var finalXOffset =  right === true? currentXOffset - 2* shiftXOffset + accumalatedXOffset:currentXOffset + accumalatedXOffset;
 
 
 
@@ -566,7 +571,7 @@ function createHexagonChain(element, amount, borderWidth){
 
 	}
 
-	var sizeIncrease = 3;
+	var sizeIncrease = 2.5;
 	$(".hexagon").each(function(index, element){
 
 		var originalWidth = $(element).width();
@@ -579,6 +584,7 @@ function createHexagonChain(element, amount, borderWidth){
 		var totalYoffset = originalYOffset-centerYoffset;
 		$.data(element, "originalXOffset", originalXOffset);
 		$.data(element, "originalYOffset", originalYOffset);
+		console.log(element);
 
 		$(element).mouseover(function(eventObject){
 			$(element).css({
@@ -607,7 +613,7 @@ function createHexagonChain(element, amount, borderWidth){
 						amount,
 						decay,
 						inverseDecay,
-						centerXoffset,
+						centerXoffset + borderWidth,
 						$(this).index()%2===0? -centerYoffset : centerYoffset,
 						true
 					);
@@ -620,7 +626,7 @@ function createHexagonChain(element, amount, borderWidth){
 						amount,
 						decay,
 						inverseDecay,
-						centerXoffset,
+						-centerXoffset - borderWidth,
 						$(this).index()%2===0? -centerYoffset : centerYoffset,
 						false
 					);
@@ -1171,6 +1177,40 @@ function scrolling(){
 	$("#scrollbutton4").click(scrollTo($("#contact")));
 }
 
+function loadingScreen(){
+	var div = document.createElement("section");
+	$(div).css({
+		"position":"absolute",
+		"width":"100%",
+		"height":"100%",
+		"background" : "white",
+		"class": "loading"
+	});
+}
+
+function removeLoadingScreen(){
+	$(".loading").fadeTo(400, 0, function(){
+		$(".loading").remove();
+	});
+}
+
+function LoadObject(start, increment, complete){
+	this.queue = Array();
+	this.addProcessToQueue = function(input){
+		this.prototype = LoadObject;
+		this.queue.push(input);
+	}
+	this.execute = function(){
+		start();
+		this.prototype = LoadObject;
+		for(var i = 0; i<this.queue.length; i++){
+			this.queue[i]();
+			increment();
+		}
+		complete();
+	}
+}
+
 //main
 (function(){
 	$(document).ready(function(){
@@ -1193,7 +1233,7 @@ function scrolling(){
 		scrollPastAndSlideUp($("#skills"), backGroundAspectRatio);
 //		scrollPastAndSlideUp($('#transition-slide2'), backGroundAspectRatio, $('#skills'));
 //		scrollPastAndSlideUp($("#aboutme"), backGroundAspectRatio, $("#skills"));
-		coreSkillsSlide($("#coreskills"), 200, 2, 200, 50);
+		coreSkillsSlide($("#coreskills"), 180, 2, 200, 50);
 		horizontalCenter($("#coreskills"));
 		createTriangleTransitionSlide($("#transition-slide4"), "#2D2D3D");
 		scrolling();
