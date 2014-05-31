@@ -81,13 +81,13 @@ body {
 	background-repeat: no-repeat;
 }
 
-.bluetriangleBG {
-	background-image:url("../images/bluetriangle.svg");
-	background-size: 100%;
-	background-position: center;
+/*.bluetriangleBG {*/
+	/*background-image:url("../images/bluetriangle.svg");*/
+	/*background-size: 100%;*/
+	/*background-position: center;*/
 	/*background-attachment: fixed;*/
-	background-repeat: no-repeat;
-}
+	/*background-repeat: no-repeat;*/
+/*}*/
 
 #coreskills {
 	text-align: center;
@@ -225,19 +225,6 @@ body {
 	-webkit-mask-position-x: 50%;
 	-webkit-mask-position-y: 100%;
 	-webkit-mask-size: 100%;
-}
-
-.skillbox {
-	position: relative;
-	left: 50%;
-	margin-left: -8%;
-	width: 16%;
-	text-align: center;
-	bottom: 5%;
-	background-image: url(../images/skillbox.svg);
-	background-position: center;
-	background-size: contain;
-	background-repeat: no-repeat;
 }
 
 .skillTitle {

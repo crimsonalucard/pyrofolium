@@ -1,1 +1,4 @@
 .idea
+*.min.js
+*.swp
+node_modules
