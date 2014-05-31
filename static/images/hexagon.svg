@@ -10,7 +10,7 @@
    version="1.1"
    width="726"
    height="628"
-   viewBox="0 0 726 628"
+   viewBox="-12 -12 750 652"
    id="svg3208">
   <metadata
      id="metadata3221">
@@ -27,15 +27,17 @@
   <g
      id="Layer 1">
     <g
-       id="g3211">
+       id="g3211" stroke="#7A747C">
       <path
          d="m 723,314 -180,311.769 -360,0 L 3,314 183,2.231 543,2.231 723,314 z"
          id="path3213"
-         style="fill:#ffffff" />
+         style="fill:#ffffff"
+         stroke-width="24"/>
       <path
          d="m 723,314 -180,311.769 -360,0 L 3,314 183,2.231 543,2.231 723,314 z"
          id="path3215"
-         style="fill-opacity:0;stroke:#ffffff;stroke-width:4" />
+         style="fill-opacity:0;stroke:#ffffff;stroke-width:4"
+         stroke-width="24" />
     </g>
   </g>
   <defs

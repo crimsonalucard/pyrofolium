@@ -1,22 +1,178 @@
-/**
- * Created by brian on 3/9/14.
- */
+/*jslint browser: true*/
+/*global $, jQuery, alert*/
+
+
+//measures the width of an element not yet inserted into the DOM
+$.fn.measure = function(fn){
+  var el = $(this).clone(false);
+  el.css({
+    visibility: 'hidden',
+    position:   'absolute',
+	display: 'inline',
+	"white-space":"nowrap"
+  });
+  el.appendTo('body');
+  result = fn.apply(el);
+  el.remove();
+  return result;
+}
+
+function getInternetExplorerVersion()
+{
+	//official code from the Microsoft does not account for
+	//Windows 8 IE 9 "Netscape".
+	//Typically it is better to use feature detection. However for
+	//position: fixed there is a bug in IE 9 windows 8 that is not detectable
+	//via feature detection...
+  var rv = -1;
+  if (navigator.appName == 'Microsoft Internet Explorer')
+  {
+    var ua = navigator.userAgent;
+    var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+    if (re.exec(ua) != null)
+      rv = parseFloat( RegExp.$1 );
+  }
+  else if (navigator.appName == 'Netscape')
+  {
+    var ua = navigator.userAgent;
+    var re  = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+    if (re.exec(ua) != null)
+      rv = parseFloat( RegExp.$1 );
+  }
+  return rv;
+}
+
+var walk_the_DOM = function walk(node, func) {
+    func(node);
+    node = node.firstChild;
+    while (node) {
+        walk(node, func);
+        node = node.nextSibling;
+    }
+};
+
+function changeFixedPositionToAbsoluteIfIE(element){
+	if(getInternetExplorerVersion() !== -1){
+		if($(element).css("position") === "fixed"){
+			$(element).css({"position":"absolute"});
+		}
+	}
+}
+
+
+function ieSpecificChecks(){
+	//no feature detection for position fixed.
+
+	function moveFixedDivIntoSection(){
+		if(getInternetExplorerVersion() !== -1){
+			$("#front-content").appendTo("#first-section");
+		}
+	}
+
+	function changeBodyBackgroundToAbsolute(){
+		if( getInternetExplorerVersion() !== -1 && $('body').css("background-attachment") === "fixed"){
+			$('body').css({
+				"background-attachment": "scroll",
+				"background-color": "#D2CCC9"
+			});
+		}
+	}
+
+	changeFixedPositionToAbsoluteIfIE($("#front-title"));
+	changeFixedPositionToAbsoluteIfIE($("#scrollbutton1"));
+	moveFixedDivIntoSection();
+	changeBodyBackgroundToAbsolute();
+
+	if(doesSVGForeignObjectExist() !== true){
+		$("#aboutme, #skills").css({
+			"background-image":"none"
+		});
+
+		createTriangleTransitionSlide($("#transition-slide1"), "#B2ABAD");
+		$("#aboutme").css({
+			"background-color":"#B2ABAD"
+		});
+		createTriangleTransitionSlide($("#transition-slide2"), "#D2CCC9", false, "#D2CCC9", "#B2ABAD");
+		$("#skills").css({
+			"background-color":"#D2CCC9"
+		})
+		createTriangleTransitionSlide($("#transition-slide3"), "#B2ABAD", false, "#B2ABAD", "#D2CCC9");
+		$("#work").css({
+			"background-color":"#B2ABAD"
+		});
+		createTriangleTransitionSlide($("#transition-slide4"), "#2D2D3D", false, "#2D2D3D", "#B2ABAD");
+
+	}
+
+
+}
+
+function doesSVGForeignObjectExist(){
+	try {
+   		return SVGForeignObjectElement !== 'undefined'
+	}
+	catch (e) {
+		return false;
+	}
+}
+
+
+function ieFixedBackgroundFlickerhack(){
+	//fix ie background flickering...
+	try {
+ 			document.execCommand("BackgroundImageCache", false, true);
+		} catch(err) {}
+}
 
 //animate bgposition jquery plugin
-$.fn.animateBG = function(x, y, speed) {
-    var pos = this.css('background-position').split(' ');
-    this.x = pos[0] || 0,
-    this.y = pos[1] || 0;
+$.fn.animateBG = function (x, y, speed, complete) {
+	if(getInternetExplorerVersion() === -1){
+		var pos = this.css('background-position').split(' ');
+		this.x = pos[0] || 0;
+		this.y = pos[1] || 0;
 
-    $.Animation( this, {
-        x: x,
-        y: y
-      }, {
-        duration: speed
-      }).progress(function(e) {
-          this.css('background-position', e.tweens[0].now+'px '+e.tweens[1].now+'px');
-    });
+		$.Animation(this, {
+			x: x,
+			y: y
+		}, {
+			duration: speed,
+			"complete": complete? complete() : function(){}
+		}).progress(function (e) {
+			this.css('background-position', e.tweens[0].now + 'px ' + e.tweens[1].now + 'px');
+		});
+	}
     return this;
+}
+
+function lockscrolling(){
+	var html = jQuery('html'); // it would make more sense to apply this to body, but IE7 won't have that
+
+	//check to see if scrolling is already locked! without this test there are cases where it unlockscrolling() will not
+	//work
+	if(html.css('overflow') !== "hidden"){
+		// lock scroll position, but retain settings for later
+		var scrollPosition = [
+		self.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
+		self.pageYOffset || document.documentElement.scrollTop  || document.body.scrollTop
+		];
+		html.data('scroll-position', scrollPosition);
+		html.data('previous-overflow', html.css('overflow'));
+		html.css('overflow', 'hidden');
+		window.scrollTo(scrollPosition[0], scrollPosition[1]);
+	}
+}
+
+function unlockscrolling(){
+  // un-lock scroll position
+  var html = jQuery('html');
+
+	if(html.css('overflow') === 'hidden'){
+		var scrollPosition = html.data('scroll-position');
+		html.css('overflow', html.data('previous-overflow'));
+		if(scrollPosition){
+			window.scrollTo(scrollPosition[0], scrollPosition[1]);
+		}
+	}
 }
 
 function guid() {
@@ -101,7 +257,171 @@ function horizontalCenter(innerElement){
 	$(window).resize(syncCenter);
 }
 
+function createTriangularTextWrappingSpace2(element, angleOfPoint){
+		//this function will attempt to fit the text contained in "element" into an inverted Isosceles triangle of the
+		//specified angle.
+		//It does this by measuring the total length of the text and multiplying it by the height of text to get a rough
+		// estimate the total area the text occupies. It will then create a triangle of equal area and try to fit the
+		// text into this triangle by inserting line breaks at the correct points. It does not optimize or ensure that
+		// each line will fit it just chooses the initial closest solution.
+		//This is actually the most expensive function to calculate, I may remove it in the future.
+
+		var clone = $(element).clone();
+		var originalText = $(element).html();
+		var totalLengthOfText = $(element).measure(function(){
+			return $(this).width();
+		});
+		var heightOflineOfText = $(element).measure(function(){
+			return $(this).height();
+		});
+		var totalArea = totalLengthOfText*heightOflineOfText;
+
+		var widthOfTriangle = 2*Math.sqrt(totalArea * Math.atan(angleOfPoint/2));
+		var heightOfTriangle = Math.sqrt(totalArea/Math.atan(angleOfPoint/2));
+
+		var totalLines = Math.ceil(heightOfTriangle/heightOflineOfText);
+		var lengthOfSpace = (function(){
+			var plength = $(clone).html("p").measure(function(){
+				return $(this).width();
+			});
+
+			var pSpaceplength = $(clone).html("p p").measure(function(){
+				return $(this).width();
+			});
+
+			$(clone).html(originalText);
+
+			return pSpaceplength - 2*plength;
+		})();
+
+
+		//synchronize to resize event;
+		var that = this;
+		$(window).resize(function(){
+			if($(window).width() <= 817){
+				if(!$(window).data("aboutTriangleCalculated")){
+					$(window).data("aboutTriangleCalculated", true);
+					$(element).find("br").remove();
+				}
+			}else{
+				if($(window).data("aboutTriangleCalculated")){
+					$(window).data("aboutTriangleCalculated", false);
+					//use memoized result for speed during resize...
+					$(element).html(that.triangleText);
+				}
+			}
+		});
+
+		this.findAmountOfWordsthatWillFitInLine = function(lineLength, wordLengthArray){
+			if(wordLengthArray === null){
+				return;
+			}
+
+			var accumulatedWords = 0;
+			var accumulatedLength = 0;
+			var prevLength = 0;
+			for(var key in wordLengthArray){
+				prevLength = accumulatedLength;
+				if(parseInt(key) > 0){
+					accumulatedLength += lengthOfSpace;
+				}
+				accumulatedLength += wordLengthArray[key];
+				accumulatedWords += 1;
+				if(accumulatedLength > lineLength){
+					if(Math.abs(lineLength - prevLength) >= Math.abs(accumulatedLength-lineLength)){
+						return accumulatedWords;
+					}else{
+						return accumulatedWords-1;
+					}
+				}
+			}
+
+			//loop exits without returning flush everything
+			return accumulatedWords;
+
+		}
+
+		this.generateHTMLStrings = function(){
+
+			function LineObject(ArrayOfWords){
+				this.htmlString = ArrayOfWords.join(' ')+" <br />"
+			}
+
+			var arrayOfLineObjects = Array();
+			var resultWordsPerLineArray = Array();
+			var lengthOfWordsArray = this.generateArrayOfLengthOfWords();
+			var wordsArray = this.generateArrayOfWords();
+			for(var i = 0; i<totalLines; i++){
+				if(wordsArray.length === 0){
+					break;
+				}
+				var goalWidth = this.findWidthBasedOnLineNumberFromTop(i);
+//				console.log(goalWidth);
+				var result = this.findAmountOfWordsthatWillFitInLine(goalWidth, lengthOfWordsArray);
+//				console.log(result);
+//				console.log(lengthOfWordsArray.slice(0, result));
+				arrayOfLineObjects[i] = new LineObject(wordsArray.slice(0, result));
+				//console.log(arrayOfLineObjects[i].htmlString);
+				lengthOfWordsArray = lengthOfWordsArray.slice(result);
+				wordsArray = wordsArray.slice(result);
+//				console.log(wordsArray.slice(0, result["lengthOfLine"]));
+//				wordsArray = wordsArray.slice(result["lengthOfLine"]);
+			}
+
+			return arrayOfLineObjects;
+		}
+
+		this.appendToElement = function(){
+			var htmlStrings = this.generateHTMLStrings();
+			var finalString = ""
+			for(var key in htmlStrings){
+				finalString+=htmlStrings[key].htmlString;
+			}
+
+			//because this is expensive to calculate, memoize the the string for future use.
+			this.triangleText = finalString;
+
+			if($(window).width()>817){
+				$(element).html(finalString);
+			}
+		}
+
+
+		this.findWidthBasedOnLineNumberFromTop = function(lineNumber){
+			var currentHeight = (lineNumber+1)*(heightOflineOfText) - (heightOflineOfText/2);
+			return -(widthOfTriangle/heightOfTriangle)*currentHeight+widthOfTriangle;
+		}
+
+		this.generateArrayOfWords = function(){
+			return $(element).html().split(' ');
+		}
+
+		this.generateArrayOfLengthOfWords = function(){
+			var arrayOfWords = this.generateArrayOfWords();
+
+			var arrayOfLengthOfWords = Array();
+			for(var i = 0; i<arrayOfWords.length; i++){
+				arrayOfLengthOfWords[i] = $(clone).html(arrayOfWords[i]+"p").measure(function(){
+					return $(this).width();
+				}) - $(clone).html("p").measure(function(){
+					return $(this).width();
+				});
+			}
+
+			return arrayOfLengthOfWords;
+		}
+}
+
+
+
 function createTriangularTextWrappingSpace(element, resolution, angleOfPoint){
+	if(doesSVGForeignObjectExist() !== true){
+		//transition slide only functions with foreign Object SVG tag...
+		return;
+	}
+
+
+
 	//element refers to the text element not the containing element.
 	//this function assumes that the text element is within a containing element.
 	//it will double the height of the containing element to make up for lost text
@@ -175,85 +495,241 @@ function createTriangularTextWrappingSpace(element, resolution, angleOfPoint){
 
 }
 
-function createMaskedImage(i, width, backimage, backmask, borderWidth){
+function createMaskedImage(i, width, backimage, backmask, borderWidth, customXOffset, customYOffset, defaultBackgroundColor){
 
 	var div = document.createElement('div');
-	var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+	//var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+	var svg = document.createElement("svg");
 	var defs = document.createElementNS("http://www.w3.org/2000/svg", 'defs');
 	var mask = document.createElementNS("http://www.w3.org/2000/svg", 'mask');
-	var image = document.createElementNS("http://www.w3.org/2000/svg", 'image');
-	var foreignObject = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
+	//var image = document.createElementNS("http://www.w3.org/2000/svg", 'image');
+	var image = document.createElementNS("http://www.w3.org/2000/svg", "image");
+
+	var maskImage = document.createElementNS("http://www.w3.org/2000/svg", 'image');
 	var div2 = document.createElement('div');
 	var maskid = "hexagonmask" + i.toString();
 	var borderIncrement = 2/Math.sqrt(3)*borderWidth;
 	var hexagonWidth = width;
 	var height = width*Math.sqrt(3)/2;
 	var hexagonEdgeWidth = height*Math.sqrt(3)/2;
+	var left = Math.ceil((i*hexagonEdgeWidth)+(i*borderIncrement));
+	var top =  i%2? 0:Math.ceil(height/2);
+	var img = document.createElement("img");
+	var backgroundColorCover = document.createElement('div');
+
+	$(svg).attr({
+		"width":"100%",
+		"height":"100%",
+		"version":"1.1",
+		"xmlns":"http://www.w3.org/2000/svg",
+		"xmlns:xlink":"http://www.w3.org/1999/xlink"
+	});
+
+
+
+
+
+
+	if(doesSVGForeignObjectExist()){
+		var foreignObject = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
+		foreignObject = $(foreignObject).attr({
+			width:"100%",
+			height:"100%",
+			style:"mask: url(#"+maskid+");"
+		});
+		$(img).attr({
+			"src":backimage
+		}).css({
+			"height":"100%",
+			"width":"auto",
+			"max-width":"none",
+			display:"inline-block",
+			"position":"absolute"
+		});
+		$(backgroundColorCover).css({
+			"width":"100%",
+			"height":"100%",
+			"position":"absolute",
+			"background-color":defaultBackgroundColor
+		}).attr("id","hexagonCover"+ i.toString()).addClass("hexagonCover");
+		$(div2).prepend(backgroundColorCover);
+		$(div2).prepend(img);
+		$(foreignObject).prepend(div2);
+		$(svg).prepend(foreignObject);
+		mask = $(mask).attr({
+			id:maskid
+		});
+
+		//you must directly access the dom node because jquery converts to lowercase
+		mask[0].setAttribute('maskUnits',"userSpaceOnUse");
+		mask[0].setAttribute('maskContentUnits', "userSpaceOnUse");
+
+		maskImage = $(maskImage).attr({
+			width:"100%",
+			height:"100%",
+			"xlink:href":backmask
+		});
+		$(mask).prepend(maskImage);
+
+		$(svg).attr({
+			height: '100%',
+			width: '100%'
+		});
+
+		$(div2).css({
+			"background-color": defaultBackgroundColor,
+			"background-image": 'url("'+backimage+'")',
+			"background-attachment": "fixed",
+			"background-repeat": "repeat",
+			"background-size":"auto 100%",
+			"background-origin":"content-box",
+			"background-position":Math.ceil(left-customXOffset).toString() + "px, " +  Math.ceil(top-customYOffset).toString() +"px",
+			"mask": 'url('+backmask+')',
+			"-webkit-mask-image": 'url('+backmask+')',
+			"-webkit-mask-repeat": "no-repeat",
+			"-webkit-mask-size": "auto 100%",
+			"-webkit-mask-position-x": "50%",
+			"width": "100%",
+			"height": "100%",
+			"position": "absolute",
+			"overflow":"hidden"
+		});
+
+		//create structure
+		//$(div2).append(img);
+		$(defs).prepend(mask);
+
+
+		$(svg).prepend(defs);
+		$(div).prepend(svg);
+	}else{
+		//IE does not correctly create the image element for svg using document.createElementNS(). It also has huge parsing issues when using jquery or the DOM API for creating svg elements. by creating these objects I'm keeping accessing the dom api at a minimum
+
+		function customElementString(elementName, attributeObject, innerHTML){
+			var that = this;
+			this.elementName = elementName;
+			this.attributeObject = attributeObject;
+			var innerHTML = innerHTML?innerHTML:"";
+			var htmlString = "";
+			this.reload = function(elementName, attributeObject){
+				htmlString = "<"+elementName;
+				for(var key in attributeObject){
+					htmlString = htmlString+" "+key+"="+attributeObject[key];
+				}
+
+				htmlString = htmlString+" ";
+			}
+
+			this.reload(elementName, attributeObject);
+
+			this.append = function(internalString){
+				innerHTML = internalString;
+			}
+
+			this.returnString = function(){
+				if(innerHTML !== "")
+				{
+					return htmlString+">"+innerHTML+"</"+elementName+">";
+				}
+				else{
+					return htmlString+"/>";
+				}
+			}
+		}
+
+		function appendStringIntoElement(element, stringToAppend){
+			//console.log(element.innerHTML);
+			element.innerHTML = element.innerHTML + stringToAppend;
+		}
+		console.log("test", defaultBackgroundColor);
+		var rect = new customElementString("rect",{
+			"width":"100%",
+			"height":"100%",
+			"fill":defaultBackgroundColor,
+			"mask":"url(#"+maskid+")",
+			"class":"hexagonCover"
+		});
+
+		image = new customElementString("image",{
+			"mask":"url(#"+maskid+")",
+			"xlink:href":backimage,
+			"width":"100%",
+			"height":"100%"
+		});
+
+		maskImage = new customElementString("image", {
+			"width":"100%",
+			"height":"100%",
+			"xlink:href":backmask
+		});
+		mask = new customElementString("mask",{
+			"id":maskid,
+			"maskUnits":"userSpaceOnUse"
+		}, maskImage.returnString());
+
+		defs = new customElementString("defs",{}, mask.returnString());
+		svg = new customElementString("svg", {
+			"width":"100%",
+			"height":"100%",
+			"version":"1.1"
+//			"xmlns":"http://www.w3.org/2000/svg",
+//			"xmlns:xlink":"http://www.w3.org/1999/xlink"
+		}, defs.returnString()+image.returnString()+rect.returnString());
+		appendStringIntoElement(div, svg.returnString());
+	}
+
 
 	div = $(div).css({
 		height:Math.ceil(height),
 		width:Math.ceil(hexagonWidth),
 		position:"absolute",
-		top: i%2? 0:Math.ceil(height/2),
-		left:Math.ceil((i*hexagonEdgeWidth)+(i*borderIncrement))
+		top:top,
+		left:left
 	}).addClass("hexagon");
 
-	svg = $(svg).attr({
+	$(svg).attr({
 		height: '100%',
 		width: '100%'
 	});
 
-	mask = $(mask).attr({
-		id:maskid
-	});
-
-	//you must directly access the dom node because jquery converts to lowercase
-	mask[0].setAttribute('maskUnits',"userSpaceOnUse");
-	mask[0].setAttribute('maskContentUnits', "userSpaceOnUse");
-
-	image = $(image).attr({
-		width:"100%",
-		height:"100%",
-		"xlink:href":backmask
-	});
-
-	 foreignObject = $(foreignObject).attr({
-		width:"100%",
-		height:"100%",
-		style:"mask: url(#"+maskid+");"
-	});
-	div2 = $(div2).css({
-		"background-color": "#D2CCC9",
+	$(div2).css({
+		"background-color": defaultBackgroundColor,
 		"background-image": 'url("'+backimage+'")',
 		"background-attachment": "fixed",
-		"background-repeat": "no-repeat",
-		"background-position": "center",
+		"background-repeat": "repeat",
+		"background-size":"auto 100%",
+		"background-origin":"content-box",
+		"background-position":Math.ceil(left-customXOffset).toString() + "px, " +  Math.ceil(top-customYOffset).toString() +"px",
+		"mask": 'url('+backmask+')',
 		"-webkit-mask-image": 'url('+backmask+')',
 		"-webkit-mask-repeat": "no-repeat",
 		"-webkit-mask-size": "auto 100%",
 		"-webkit-mask-position-x": "50%",
 		"width": "100%",
 		"height": "100%",
-		"position": "absolute"
+		"position": "absolute",
+		"overflow":"hidden"
 	});
 
 	//create structure
+	//$(div2).append(img);
 
-	$(foreignObject).prepend(div2);
-	$(mask).prepend(image);
-	$(defs).prepend(mask);
-	$(svg).prepend(foreignObject);
-	$(svg).prepend(defs);
-	$(div).prepend(svg);
+	$(div).css({
+		height:Math.ceil(height),
+		width:Math.ceil(hexagonWidth),
+		position:"absolute",
+		top:top,
+		left:left
+	}).addClass("hexagon");
 
 
 	//return div;
 
 	//there is a bug in firefox that will now allow it to render
 	//mask svg elements when generated by javascript DOM. Instead
-	//shove it into the dom via a string and use$().html()...
+	//shove it into the dom via a string and use $().html()...
 
-	return div.prop('outerHTML');
+	return div;
 }
 
 function isString(variable){
@@ -265,7 +741,10 @@ function isString(variable){
 }
 
 function createArrowTransitionSlide(aspect, width, element, alpha, backgroundImage, secondBackgroundImage, firstMask, secondMask){
-
+	if(doesSVGForeignObjectExist() !== true){
+		//transition slide only functions with foreign Object SVG tag...
+		return;
+	}
 	var negativeHalfWidth =  (-(width/2)).toString()+"px";
 	if(isString(width) && width.slice(-1) === '%'){
 		var widthNum = parseInt(width.slice(0,-1));
@@ -310,6 +789,7 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		"overflow":"hidden",
 		"width": "100%",
 		"position": "relative",
+		"mask": secondMaskString,
 		"-webkit-mask-image": secondMaskString,
 		"-webkit-mask-repeat": "no-repeat",
 		"-webkit-mask-position-x": "50%",
@@ -480,8 +960,18 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 	);
 }
 
-function createHexagonChain(element, amount, borderWidth){
-	var width = element.parent().width();
+
+
+
+function createHexagonChain(element, borderWidth, backgroundWidth, backgroundHeight){
+
+
+	var workList = $(element).find("#worklist");
+	$(workList).remove();
+	var amount = $(workList).children().length;
+
+
+	var width = 800;
 	var hexagonWidth = (width-((amount*borderWidth)+1))/amount/2;
 	var hexagonHeight = hexagonWidth*Math.sqrt(3)/2;
 	var chainWidth = Math.ceil(amount*(hexagonWidth - hexagonWidth/4) + (amount+2)*borderWidth);
@@ -492,21 +982,38 @@ function createHexagonChain(element, amount, borderWidth){
 		"margin-left": -Math.ceil(chainWidth/2)
 	}).attr("id","hexagonChain");
 
-	for(var i = 0; i<amount; i++){
+	var slideSetArray = {};
+
+	$(window).resize(function(){
+		chainWidth = Math.ceil(amount*(hexagonWidth - hexagonWidth/4) + (amount+2)*borderWidth);
+		$(container).css({
+			"margin-left": -Math.ceil(chainWidth/2)
+		})
+	});
+
+	$(workList).children().each(function(index, element){
+		var hexagonID = 'hexagon'+ index.toString();
+		slideSetArray[hexagonID] = new SlideSetObject($(element), hexagonID);
 
 		var hexagon = createMaskedImage(
-			i,
-			Math.floor(hexagonWidth),
-			"static/images/cover_cubes.jpg",
-			"static/images/hexagon_small.png",
-			borderWidth);
+		index,
+		Math.floor(hexagonWidth),
+		//"static/images/cover_cubes.jpg",
+		slideSetArray[hexagonID].coverImage,
+		"static/images/hexagon_small.png",
+		borderWidth,
+		Math.ceil(backgroundWidth/3),
+		Math.ceil(backgroundHeight/7),
+		colorCycler(Math.ceil(index*255/($(workList).children().length)+510))
+		);
 
-		$(hexagon).attr('id', 'hexagon'+i.toString());
+		$(hexagon).attr('id', hexagonID);
+
 
 		$(container).html(
-			$(container).html() + hexagon
+			$(container).html() + hexagon.prop("outerHTML")
 		);
-	}
+	});
 
 	$('#work').append(
 		container
@@ -525,6 +1032,8 @@ function createHexagonChain(element, amount, borderWidth){
 	})(amount, "hexagonmask");
 
 	function BulgeEffectOnHexagons(originElement, prevElementHeight, prevElementWidth, originalWidth, originalHeight, limit, decayFunction, inverseDecayFunction, accumalatedXOffset, accumulatedYOffset, right){
+
+
 		var indexOfOrigin = $(originElement).index();
 		if( indexOfOrigin>=limit || indexOfOrigin<0)
 		{
@@ -546,8 +1055,6 @@ function createHexagonChain(element, amount, borderWidth){
 
 //		var currentXOffset = parseInt($(originElement).css("left").slice(0,-2));
 		var currentXOffset = $.data($(originElement)[0], "originalXOffset");
-		console.log($(originElement).css("left").slice(0,-2));
-		console.log(originElement);
 
 
 		var shiftXOffset = right === true? (newWidth-originalWidth)/2 : -(newWidth-originalWidth)/2;
@@ -571,8 +1078,15 @@ function createHexagonChain(element, amount, borderWidth){
 
 	}
 
-	var sizeIncrease = 2.5;
+	var sizeIncrease = 7;
+
+	$(".hexagonCover").hover(function(){
+		$(".hexagonCover").stop(true, false).fadeOut();
+	});
+
 	$(".hexagon").each(function(index, element){
+
+
 
 		var originalWidth = $(element).width();
 		var originalHeight = $(element).height();
@@ -584,11 +1098,37 @@ function createHexagonChain(element, amount, borderWidth){
 		var totalYoffset = originalYOffset-centerYoffset;
 		$.data(element, "originalXOffset", originalXOffset);
 		$.data(element, "originalYOffset", originalYOffset);
-		console.log(element);
+
+
+//		$("#hexagonCover"+index.toString()).hover(function(){
+//			$(this).stop(true, false).fadeOut();
+//		}, function(){
+//			//do nothing leave it fadedOut.
+//		});
+
+
+		var magnifyGlassImage = document.createElement("img");
+
+		$(magnifyGlassImage).attr({
+			"src":"static/images/magnifying_glass.svg"
+		}).attr({
+			"id":"innerhexagon"+index.toString(),
+			"class":"innerhexagon"
+		}).css({
+			"width":"100%",
+			"height":"100%"
+		});
+
+		$(element).children().eq(0).children(1).eq(1).children().eq(0).children().eq(1).append(magnifyGlassImage);
 
 		$(element).mouseover(function(eventObject){
+
+//			$(".innerhexagon").stop(true, false).fadeIn(400, function(){
+//				$(magnifyGlassImage).stop(true, false).fadeOut();
+//			});
 			$(element).css({
-				"z-index":99
+				"z-index":99,
+				"cursor":"pointer"
 			}).stop(true, false).animate({
 				height:originalHeight*sizeIncrease,
 				width:originalWidth*sizeIncrease,
@@ -598,11 +1138,11 @@ function createHexagonChain(element, amount, borderWidth){
 				"start":function(){
 
 					function decay(input){
-						return input*0.75;
+						return input*0.6;
 					}
 
 					function inverseDecay(input){
-						return input/0.75;
+						return input/0.6;
 					}
 					BulgeEffectOnHexagons(
 						$(this).next(),
@@ -636,24 +1176,58 @@ function createHexagonChain(element, amount, borderWidth){
 
 		$(element).mouseout(function(eventObject){
 			//reset the size and offset of every hexagon...
-					$(".hexagon").css("z-index", 98).each(function(index, element){
+
+					$(".innerHexagon").stop(true, false).fadeOut();
+
+					$(".hexagon").css({
+						"z-index": 98,
+						"cursor":"default"
+					}).each(function(index, element){
 						$(element).animate({
 							left: $.data(element, "originalXOffset"),
 							top: $.data(element, "originalYOffset"),
 							width: originalWidth,
 							height: originalHeight
-						})
+						},{
+							"complete":function(){
+								//$(magnifyGlassImage).fadeIn();
+								$(".hexagonCover").stop(true, false).fadeIn();
+							}
+						});
 					});
 
 			});
+	});
+
+
+
+	//create slideset
+	for(var key in slideSetArray){
+		$('#'+slideSetArray[key].clickID).click(function(){
+
+			$("#work").children().each(function(){
+				$(this).fadeOut();
+			});
+
+			$('html, body').animate({
+				scrollTop: $("#contact").offset().top - 2*$("#contact").height()
+			}, {
+				complete:function(){
+					lockscrolling();
+				}
+			});
+
+			slideSetArray[$(this).attr('id')].createOverlay($('#work'));
 		});
-
-
-
-
+	}
 }
 
 function fixedPositionOnScrollPast(element){
+	if( getInternetExplorerVersion() !== -1)
+	{
+		return;
+	}
+
 	var placeholderElement = document.createElement('div');
 	$(placeholderElement).height(element.height()).width(element.width()).css({
 		"position":"relative",
@@ -672,6 +1246,7 @@ function fixedPositionOnScrollPast(element){
 				"position":"fixed",
 				"top":0
 			});
+			ieFixedBackgroundFlickerhack();
 			$(element).after(placeholderElement);
 
 
@@ -748,49 +1323,50 @@ function scrollPastAndHandle(element, elementTrigger, handlerDown, handlerUp){
 
 function scrollPastAndSlideUp(element, aspect, elementTrigger){
 
-
-	var marker;
-	var initialScrollPoint = $(document).scrollTop();
-	var heightToBeMoved;
-	if(elementTrigger){
-		marker = $(elementTrigger).offset().top;
-		heightToBeMoved = -2*Math.ceil((1/aspect)*$(elementTrigger).width());
-	}
-	else{
-		marker = $(element).offset().top;
-		heightToBeMoved = -2*Math.ceil((1/aspect)*$(element).width());
-	}
-
-	function scrollDownPastHandler(){
-		if($(document).scrollTop() >= marker){
-			$(window).unbind("scroll", scrollDownPastHandler);
-			$(window).scroll(scrollUpPastHandler);
-//			$(element).animate({
-//				"background-position-y":heightToBeMoved.toString()+"px"
-//			}, 400);
-			$(element).css({"background-position": "0 0"}).stop(true, false).animateBG(0, heightToBeMoved, 2000);
+ 	if(doesSVGForeignObjectExist()){
+		var marker;
+		var initialScrollPoint = $(document).scrollTop();
+		var heightToBeMoved;
+		if(elementTrigger){
+			marker = $(elementTrigger).offset().top;
+			heightToBeMoved = -2*Math.ceil((1/aspect)*$(elementTrigger).width());
 		}
-	}
+		else{
+			marker = $(element).offset().top;
+			heightToBeMoved = -2*Math.ceil((1/aspect)*$(element).width());
+		}
 
-	function scrollUpPastHandler(){
-		if($(document).scrollTop() <= marker){
-			$(window).unbind("scroll", scrollUpPastHandler);
+		function scrollDownPastHandler(){
+			if($(document).scrollTop() >= marker){
+				$(window).unbind("scroll", scrollDownPastHandler);
+				$(window).scroll(scrollUpPastHandler);
+	//			$(element).animate({
+	//				"background-position-y":heightToBeMoved.toString()+"px"
+	//			}, 400);
+				$(element).css({"background-position": "0 0"}).stop(true, false).animateBG(0, heightToBeMoved, 800);
+			}
+		}
+
+		function scrollUpPastHandler(){
+			if($(document).scrollTop() <= marker){
+				$(window).unbind("scroll", scrollUpPastHandler);
+				$(window).scroll(scrollDownPastHandler);
+				$(element).css({"background-position": "0 "+heightToBeMoved}).stop(true, false).animateBG(0, 0, 800);
+			}
+		}
+
+		if(initialScrollPoint <= marker){
+			$(element).css({
+				"background-position":"0 0"
+			});
 			$(window).scroll(scrollDownPastHandler);
-			$(element).css({"background-position": "0 "+heightToBeMoved}).stop(true, false).animateBG(0, 0, 2000);
 		}
-	}
-
-	if(initialScrollPoint <= marker){
-		$(element).css({
-			"background-position":"0 0"
-		});
-		$(window).scroll(scrollDownPastHandler);
-	}
-	else {
-		$(element).css({
-			"background-position-y":"0 "+heightToBeMoved.toString()
-		});
-		$(window).scroll(scrollUpPastHandler);
+		else {
+			$(element).css({
+				"background-position-y":"0 "+heightToBeMoved.toString()
+			});
+			$(window).scroll(scrollUpPastHandler);
+		}
 	}
 }
 
@@ -922,26 +1498,26 @@ function coreSkillsSlide(element, radius, thickness, resolution){
 	}
 	makeListInvisible();
 
-	function lockscrolling(){
-		// lock scroll position, but retain settings for later
-		var scrollPosition = [
-		self.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
-		self.pageYOffset || document.documentElement.scrollTop  || document.body.scrollTop
-		];
-		var html = jQuery('html'); // it would make more sense to apply this to body, but IE7 won't have that
-		html.data('scroll-position', scrollPosition);
-		html.data('previous-overflow', html.css('overflow'));
-		html.css('overflow', 'hidden');
-		window.scrollTo(scrollPosition[0], scrollPosition[1]);
-	}
-
-	function unlockscrolling(){
-	  // un-lock scroll position
-      var html = jQuery('html');
-      var scrollPosition = html.data('scroll-position');
-      html.css('overflow', html.data('previous-overflow'));
-      window.scrollTo(scrollPosition[0], scrollPosition[1])
-	}
+//	function lockscrolling(){
+//		// lock scroll position, but retain settings for later
+//		var scrollPosition = [
+//		self.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
+//		self.pageYOffset || document.documentElement.scrollTop  || document.body.scrollTop
+//		];
+//		var html = jQuery('html'); // it would make more sense to apply this to body, but IE7 won't have that
+//		html.data('scroll-position', scrollPosition);
+//		html.data('previous-overflow', html.css('overflow'));
+//		html.css('overflow', 'hidden');
+//		window.scrollTo(scrollPosition[0], scrollPosition[1]);
+//	}
+//
+//	function unlockscrolling(){
+//	  // un-lock scroll position
+//      var html = jQuery('html');
+//      var scrollPosition = html.data('scroll-position');
+//      html.css('overflow', html.data('previous-overflow'));
+//      window.scrollTo(scrollPosition[0], scrollPosition[1])
+//	}
 
 	function listOutElements(delay, callbackOnComplete){
 		//let it only run once!
@@ -951,6 +1527,7 @@ function coreSkillsSlide(element, radius, thickness, resolution){
 			if(triggered === false)
 			{
 				lockscrolling();
+				(scrollTo($("#skills")))();
 				triggered = true;
 				$("#skills").off();
 				$(element).children('ul').children('li').dequeue();
@@ -975,62 +1552,10 @@ function coreSkillsSlide(element, radius, thickness, resolution){
 	scrollPastAndHandle($("#skills"), $('#skills'), listOutElements(200, initializeRing(500)), function(){/*do nothing*/});
 
 
-//	function bulgeOnHover(){
-////		This just provided a sort of bulge effect on the circle
-////		I am canning this in favor of a wave effect function.
-//		$(".colorCircle").each(function(index, element){
-//			$(element).mouseenter(
-//				function(){
-//					$(".colorCircle").stop(true, false);
-//					var id = $(element).attr("id");
-//					var idNum = parseInt(id.slice(11));
-//
-//					$(element).animate({
-//						"stroke-width":4*radius*normalDistribution(0,0,6)+thickness
-//					}, 100);
-//
-//
-//					for(var i = 0; i<hoverExtend; i++){
-//						var iinc = i+1;
-//						var reductionConstant = 4*normalDistribution(iinc, 0, 6);
-//						var newID1 = "#colorCircle" + wheel(idNum+iinc, resolution);
-//						var newID2 = "#colorCircle" + wheel(idNum-iinc, resolution);
-//						$(newID1).animate({
-//							"stroke-width":radius*reductionConstant+thickness
-//						}, 100);
-//						$(newID2).animate({
-//							"stroke-width":radius*reductionConstant+thickness
-//						}, 100);
-//					}
-//
-//				}).mouseleave(
-//					function(){
-//						console.log("unbulging!");
-//						$(".colorCircle").stop(true, false);
-//						$(".colorCircle").animate({
-//							"stroke-width":thickness
-//						}, 800);
-//					}
-//			);
-//		});
-//	}
-
-
-//	function makeCircleDotted(){
-//		$(".colorCircle").each(function(index, element){
-//			if(index%2===0){
-//				$(this).animate({"stroke-opacity":0});
-//			}
-//		});
-//	}
-//
-//	function makeCircleSolid(){
-//		$(".colorCircle").animate({"stroke-opacity":1});
-//	}
 
 	function startWaveOnHover(){
 		function wavefront(event, growthHeight, delay, transferDelay, decayFunction, id, goingRight){
-			if(growthHeight < thickness){
+			if(growthHeight < thickness*2.3){
 				return;
 			}
 
@@ -1041,6 +1566,8 @@ function coreSkillsSlide(element, radius, thickness, resolution){
 				"start":function(){
 					$(this).delay(delay).animate({
 				    	"stroke-width":thickness
+					}, {
+						duration:150
 					});
 
 					var nextId;
@@ -1055,47 +1582,100 @@ function coreSkillsSlide(element, radius, thickness, resolution){
 						wavefront(event, decayFunction(growthHeight), delay, transferDelay, decayFunction, nextId, goingRight);
 					}, transferDelay);
 				},
-				"duration":25
+				"duration":150
 			}
 			);
 		}
-
+		$(".colorCircle").data("isHandlerActive", false);
 		$(".colorCircle").each(function(index, element){
 			 $(element).mouseover(function(){
-				var idNum =  parseInt($(this).attr("id").slice(11));
-				var decayFunction = function(x){return x*0.95;};
-				$("#colorCircle"+idNum).stop(true, false).animate({
-					"stroke-width":radius/3
-				},{
-					"start":function(){
-						$(this).animate({
-							"stroke-width":thickness
-						});
-					},
-					"duration":25
-				});
-				wavefront(null, decayFunction(radius/3), 10, 10, decayFunction, wheel(idNum+1, resolution), true);
-				wavefront(null, decayFunction(radius/3), 10, 10, decayFunction, wheel(idNum-1, resolution), false);
+
+				if($(".colorCircle").data("isHandlerActive") === false){//shut off handler temporarily for 1600 ms
+					$(".colorCircle").data("isHandlerActive", true);
+					setTimeout(function(){
+						$(".colorCircle").data("isHandlerActive", false);
+					}, 1600);
+
+
+					if ($(this).is(":animated")) {
+						//if the element is in the process of animating, return...
+						return;
+					}
+					var idNum =  parseInt($(this).attr("id").slice(11));
+					var decayFunction = function(x){return x*0.975;};
+					$("#colorCircle"+idNum).stop(true, false).animate({
+						"stroke-width":radius/3
+					},{
+						"start":function(){
+							$(this).animate({
+								"stroke-width":thickness
+							},{
+								duration:150
+							});
+						},
+						"duration":150
+					});
+					wavefront(null, decayFunction(radius/3), 15, 15, decayFunction, wheel(idNum+1, resolution), true);
+					wavefront(null, decayFunction(radius/3), 15, 15, decayFunction, wheel(idNum-1, resolution), false);
+				}
 			 });
 		});
+
+
+		//trigger random events
+		function randomWaveTrigger(amountOfTimes){
+
+
+
+			return function recursive(){
+					if(amountOfTimes === 0){
+						return;
+					}
+					var randomID = Math.floor(Math.random()*resolution);
+					$("#colorCircle"+randomID).trigger("mouseenter");
+					amountOfTimes--;
+					setTimeout(recursive, 3500);
+			}
+		}
+
+		setTimeout(randomWaveTrigger(5), 1000);
+
+
 	}
 }
 
-function colorCycler(colorLevel){
+function colorCycler(colorLevel, isSVG){
 	//color must be a number from zero to 255*3
 
 	if(colorLevel>255*3){
 		colorLevel = colorLevel%(255*3);
 	}
 
+	var red = "0"
+	var green = "0";
+	var blue = "0";
+
 	if(colorLevel < 255){
-		return "rgb("+Math.floor(255-colorLevel).toString()+", "+Math.floor(colorLevel).toString()+", 0)";
+		red = 255-colorLevel;
+		green = colorLevel;
+		blue = 0;
 	}else if(colorLevel >= 255 && colorLevel < 2*255){
-		return "rgb(0, "+Math.floor(255-(colorLevel-255)).toString()+", "+Math.floor(colorLevel-255).toString()+")";
+		red = 0;
+		green = 255-(colorLevel-255);
+		blue = colorLevel-255;
 	}else if(colorLevel >=  2*255){
-		return "rgb("+Math.floor(colorLevel-(255*2)).toString()+", 0, "+Math.floor(255-(colorLevel-(255*2))).toString()+")";
+		red = colorLevel-(255*2);
+		green  = 0;
+		blue = 255-(colorLevel-(255*2));
 	}
 
+	if(isSVG === true){
+		red = red/255;
+		green = green/255;
+		blue = blue/255;
+	}
+
+	return "rgb("+Math.floor(red).toString()+","+Math.floor(green).toString()+","+Math.floor(blue).toString()+")";
 }
 
 function drawArc(radius, width, height, startingAngle, angle, thickness, color, id, className){
@@ -1112,7 +1692,7 @@ function drawArc(radius, width, height, startingAngle, angle, thickness, color, 
 	var y1 = findAngleY(startingAngle);
 	var y2 = findAngleY(angle);
 	var path =  document.createElementNS("http://www.w3.org/2000/svg", 'path');
-	path.setAttribute("d", "M "+x1.toString()+" "+y1.toString()+" A"+radius.toString()+" "+radius.toString()+" 0 0 1 "+x2.toString()+" "+y2.toString());
+	path.setAttribute("d", "M " + x1.toString() + " " + y1.toString() + " A"+radius.toString()+" "+radius.toString()+" 0 0 1 "+x2.toString()+" "+y2.toString());
 	path.setAttribute("fill", "none");
 	path.setAttribute("stroke-width", thickness);
 	path.setAttribute("stroke", color);
@@ -1128,13 +1708,29 @@ function drawArc(radius, width, height, startingAngle, angle, thickness, color, 
 
 }
 
-function createTriangleTransitionSlide(element, color){
+function createTriangleTransitionSlide(element, color, upper, uppercolor, backgroundColor){
 	function sync(){
+		$(element).height(
+			$(window).height()
+		).width(
+			$(window).width()
+			).css({
+				"z-index":100
+			});
+
+		if(backgroundColor){
+			$(element).css({
+				"background-color":backgroundColor
+			})
+		}
+
+
+
 		var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
 
 		$(svg).attr({
-			"width":$(window).width(),
-			"height":$(window).height()
+			"width":$(element).width(),
+			"height":$(element).height()
 		});
 		$(svg).css({
 			"pointer-events":"none"
@@ -1142,8 +1738,18 @@ function createTriangleTransitionSlide(element, color){
 		var path =  document.createElementNS("http://www.w3.org/2000/svg", 'path');
 		$(path).attr({
 			"fill":color,
-			"d":"M0, "+$(window).height()+" L"+$(window).width()/2+", "+$(window).height()*0.65+" L"+$(window).width()+", "+$(window).height()+" Z"
+			"d":"M0, "+$(element).height()+" L"+$(element).width()/2+", "+$(element).height()*0.65+" L"+$(element).width()+", "+$(element).height()+" Z"
 		});
+
+		if(upper){
+			var path2 =   document.createElementNS("http://www.w3.org/2000/svg", 'path');
+			$(path2).attr({
+				"fill":uppercolor,
+				"d":"M0, 0 L"+$(element).width()/2+", "+$(element).height()*0.35+" L"+$(element).width()+",0 Z"
+			});
+			$(svg).append(path2);
+
+		}
 
 		$(svg).append(path);
 		$(element).html("");
@@ -1153,14 +1759,18 @@ function createTriangleTransitionSlide(element, color){
 	$(window).resize(sync);
 }
 
-function scrolling(){
-	function scrollTo(element){
-		return function(){
-			$('html, body').animate({
-				scrollTop: $(element).offset().top
-			}, 2000);
+function scrollTo(element, complete){
+	return function(){
+		$('html, body').animate({
+			scrollTop: $(element).offset().top
+		}, 2000);
+		if(complete){
+			complete();
 		}
 	}
+}
+
+function scrolling(){
 
 	$(".scrollbutton").hover(function(){
 		$(this).css({
@@ -1177,65 +1787,584 @@ function scrolling(){
 	$("#scrollbutton4").click(scrollTo($("#contact")));
 }
 
-function loadingScreen(){
-	var div = document.createElement("section");
-	$(div).css({
-		"position":"absolute",
-		"width":"100%",
+
+function initializeLoadingScreen(){
+	if(!$(".loading").length){
+		return;
+	}
+	var section = document.createElement("section");
+
+	$(section).css({
+		"position": "fixed",
+		"width": "100%",
 		"height":"100%",
-		"background" : "white",
-		"class": "loading"
+		"background-color":"#E6DEDE",
+		"z-index":99
+	}).attr({
+		"class":"loading"
+	})
+
+	var img = document.createElement("img");
+	$(img).attr({
+		"src":"static/images/loading.svg"
+	}).css({
+		"position": "absolute",
+		"width": "200px",
+		"height": "200px",
+		"left": "50%",
+		"top": "50%",
+		"margin-top": "-100px",
+		"margin-left": "-100px"
 	});
+	$(section).append(img);
+	$("body").prepend(section);
+	document.location = "#";
+	lockscrolling();
 }
 
 function removeLoadingScreen(){
-	$(".loading").fadeTo(400, 0, function(){
-		$(".loading").remove();
-	});
+		document.location = "#";
+		$(".loading").delay(2000).fadeTo(2000, 0, function(){
+			document.location = "#";
+			$(".loading").remove();
+			unlockscrolling();
+			document.location = "#";
+		});
 }
 
-function LoadObject(start, increment, complete){
-	this.queue = Array();
-	this.addProcessToQueue = function(input){
-		this.prototype = LoadObject;
-		this.queue.push(input);
-	}
-	this.execute = function(){
-		start();
-		this.prototype = LoadObject;
-		for(var i = 0; i<this.queue.length; i++){
-			this.queue[i]();
-			increment();
+function SlideSetObject(listElement, associatedClickID){
+	var that = this;
+	this.slides = Array();
+	var currentSlideIndex = 0;
+
+
+
+//	console.log($(listElement).children());
+	$(listElement).children().each(function(index, element){
+		if($(element).prop("tagName") === "IMG"){
+			console.log("coverimage", $(element).attr("src"));
+			that.coverImage = $(element).attr("src");
 		}
-		complete();
+	});
+
+	function SlideObject(setOfElements){
+		var that = this;
+		var htmlString = "";
+		var finalElement = document.createElement("div");
+		var outerDiv = document.createElement("div");
+		var slideSizer = document.createElement("div");
+		var verticalHeight = $(window).height();
+
+		//vertical centering hack...
+		$(slideSizer).css({
+			width: "50%",
+			"display": "inline-block",
+  			"vertical-align": "middle"
+		});
+
+//		$(outerDiv).css({
+//			height:"50%",
+//			float: "left",
+//			"margin-bottom":-Math.ceil(verticalHeight*0.32)
+//		});
+
+//		$(finalElement).css({
+//			//display:"table-cell",
+////			"vertical-align":"middle",
+////			width:"100%",
+////			position:"relative",
+////			padding:"3%"
+//			//display:"table-cell"
+//			"clear":"both",
+//			"height":Math.ceil(verticalHeight*0.64),
+//			"position":"relative"
+//		});
+
+//		$(slideSizer).append(outerDiv);
+//		$(slideSizer).append(finalElement);
+
+		//console.log($(setOfElements).children());
+		$(setOfElements).children().each(function(index, element){
+			//console.log($(element).prop("tagName"));
+			if($(element).prop("tagName") === "H3"){
+				that.h3 = document.createElement("H3");
+				$(that.h3).html($(element).html()).css({
+					"color":"#D2CCC9",
+					"font-size":25,
+					"text-align":"center"
+				});
+				htmlString += $(that.h3)[0].outerHTML;
+//				$(finalElement).append(that.h3);
+				$(slideSizer).append(that.h3);
+
+
+			}else if($(element).prop("tagName") === "IMG"){
+				that.image = document.createElement("IMG");
+				$(that.image).attr({
+					"src":$(element).attr("src")
+				}).css({
+					"max-width":$(element).attr("class") === "noStyling"? "auto":"70%",
+					"max-height":"70%",
+					"margin-left":"auto",
+					"margin-right":"auto",
+					"display":"block"
+					//"border":$(element).attr("class") === "noStyling"? "none":"solid",
+					//"border-color":"#D2CCC9"
+				});
+
+				if($(element).attr("class") !== "noStyling"){
+					$(that.image).css({
+						"-webkit-box-shadow": "0px 0px 81px 15px rgba(0,0,0,0.75)",
+						"-moz-box-shadow": "0px 0px 81px 15px rgba(0,0,0,0.75)",
+						"box-shadow": "0px 0px 81px 15px rgba(0,0,0,0.75)",
+						"border-radius": "5px",
+						"-moz-border-radius": "5px",
+						"-webkit-border-radius": "5px"
+					});
+				}
+
+				htmlString += $(that.image)[0].outerHTML;
+//				$(finalElement).append(that.image);
+				$(slideSizer).append(that.image);
+
+			}else if($(element).prop("tagName") === "P"){
+				that.p = document.createElement("P");
+				$(that.p).css({
+					"text-align":"center",
+					"margin":"20px",
+					"font-size":"16px",
+					"color":"#D2CCC9"
+				}).html($(element).html());
+				htmlString += $(that.p)[0].outerHTML;
+//				$(finalElement).append(that.p);
+				$(slideSizer).append(that.p);
+			}
+		});
+
+
+
+
+
+		this.generateSlideHTML = function(){
+			return htmlString;
+		}
+
+		this.getSlideElement = function(){
+			return slideSizer;
+			//return table;
+		}
+
 	}
+
+	function updateSlideToolsElement(){
+		$(".sliderDot").attr({
+			"src": "static/images/slideDot.svg"
+		});
+
+		$("#sliderDot"+currentSlideIndex.toString()).attr({
+			"src": "static/images/slideDotSelected.svg"
+		})
+	}
+
+	this.createSlideToolsElement = function(){
+
+
+
+		if(that.slides.length < 2){
+			return;
+		}
+
+		var lengthOfSVGElements = 60;
+
+		var container = document.createElement('div');
+		var containerWidth = lengthOfSVGElements*(that.slides.length+2)
+		$(container).css({
+			width:containerWidth,
+			bottom:"7%",
+			"position":"absolute",
+			left:"50%",
+			"margin-left":-Math.ceil(containerWidth/2)
+		}).attr("id","slideSetSelctor");
+		var left = document.createElement('img');
+		$(left).attr('src',"static/images/slideLeft.svg").click(function(){
+			var e = $.Event('keyup');
+    		e.keyCode = 37; // Character 'left'
+			$(document).trigger(e);
+		});
+
+		var right = document.createElement('img');
+		$(right).attr('src',"static/images/slideRight.svg").click(function(){
+			var e = $.Event('keyup');
+    		e.keyCode = 39; // Character 'right'
+			$(document).trigger(e);
+		});
+
+		$(right).add(left).hover(function(){
+			$(this).css({
+				"cursor":"pointer"
+			});
+		}, function(){
+			$(this).css({
+				"cursor":"default"
+			});
+		});
+
+
+
+
+
+		$(container).append(left);
+		for(var i = 0; i<that.slides.length; i++){
+			var dot = document.createElement('img');
+			var src = "static/images/slideDot.svg";
+			if(i===currentSlideIndex){
+				src = "static/images/slideDotSelected.svg";
+			}
+
+
+			$(dot).attr({
+				"src":src,
+				"id":"sliderDot"+ (i).toString(),
+				"class":"sliderDot"
+			}).hover(function(){
+			$(this).css({
+				"cursor":"pointer"
+			});
+			}, function(){
+				$(this).css({
+					"cursor":"default"
+				});
+			}).click(function(){
+				var nextSlideIndex = parseInt($(this).attr("id").slice(9));
+				var currentSlide = that.slides[currentSlideIndex].getSlideElement();
+				var nextSlide =  that.slides[nextSlideIndex].getSlideElement();
+				$(nextSlide).css("opacity", 0);
+				var slideContainer = $(currentSlide).parent();
+				$(currentSlide).fadeOut(100, function(){
+					$(this).remove();
+					$(slideContainer).append(nextSlide);//append fucks with the display property...
+					$(nextSlide).css("display","inline-block").animate({
+						opacity:1
+					},100);
+					currentSlideIndex = nextSlideIndex;
+					updateSlideToolsElement();
+				});
+			});
+			$(container).append(dot);
+		}
+		$(container).append(right);
+
+		return container;
+	}
+
+	//console.log($(listElement).find("ul"));
+	$(listElement).children("ul").children().each(function(index, element){
+		//console.log("slide", index, $(element).html());
+		that.slides[index] = new SlideObject($(element));
+	});
+
+	var docHeight = $(window).height();
+
+	this.clickID = associatedClickID;
+
+	this.createOverlay = function(placementElement){
+		console.log(this.clickID);
+		var slideSetSizer = document.createElement("div");
+
+		$(slideSetSizer).css({
+			width:"100%",
+			position:"absolute",
+			top:"50%",
+			"margin-top":0,
+			overflow:"hidden",
+			"-moz-box-shadow":		"inset 0  10px 20px -8px #000010, " +
+									"inset 0 -10px 20px -8px #000010, " +
+									"0px 0px 30px 0px rgba(0, 0, 0, 0.29)",
+			"-webkit-box-shadow":	"inset 0  10px 20px -8px #000010, " +
+									"inset 0 -10px 20px -8px #000010, " +
+									"0px 0px 30px 0px rgba(0, 0, 0, 0.29)",
+			"box-shadow":			"inset 0  10px 20px -8px #000010, " +
+									"inset 0 -10px 20px -8px #000010, " +
+									"0px 0px 30px 0px rgba(0, 0, 0, 0.29)",
+			"background-image":'url("static/images/overlaybg_hires.jpg")',
+			"z-index":200,
+			"text-align":"center",
+			"height":0
+		}).attr({
+			"id":"slideset"
+		});
+		var initialSlideToAppend = that.slides[currentSlideIndex].getSlideElement();
+		$(initialSlideToAppend).css({
+			"opacity":0
+		});
+		$(slideSetSizer).append(initialSlideToAppend);
+		$(initialSlideToAppend).animate({
+			opacity:1
+		},{
+			duration: 100
+		});
+
+
+		$(placementElement).append(slideSetSizer);
+		$(placementElement).append(that.createSlideToolsElement((9/8)*docHeight)).fadeIn();
+
+		$(slideSetSizer).stop(true, false).animate({
+				"height":Math.ceil(3*docHeight/4),
+				"margin-top":-Math.ceil(3*docHeight/8)
+			}
+		);
+
+		$(document).data("slideAnimationStarted", false);
+
+
+		$(document).keyup(function(e){
+				if($(document).data("slideAnimationStarted") === false){
+					var escape = 27;
+					if(e.keyCode === escape){
+						$(slideSetSizer).trigger('click');
+						$(this).off('keyup');
+					}
+				}
+		});
+
+
+		//if there are more then one slide register slide transition events.
+		if(that.slides.length > 1){
+			$(document).keyup(function(e){
+				if($(document).data("slideAnimationStarted") === false){
+					var right = 39;
+					var left = 37;
+					if(e.keyCode === right){
+						//moveCurrentSlideLeftOut();
+						var nextSlideIndex = wheel(currentSlideIndex+1, that.slides.length);
+						cycleSlides(nextSlideIndex);
+						currentSlideIndex = nextSlideIndex;
+						//moveSlideFromRightIn();
+					}else if(e.keyCode === left){
+//						moveCurrentSlideRightOut();
+						var nextSlideIndex = wheel(currentSlideIndex-1, that.slides.length);
+						cycleSlides(nextSlideIndex);
+						currentSlideIndex = nextSlideIndex;
+//						moveSlideFromLeftIn();
+					}
+					updateSlideToolsElement();
+				}
+			});
+
+			function cycleSlides(nextSlideIndex){
+				fadeCurrentSlideOut(function(){
+					fadeSlideIn(nextSlideIndex);
+				});
+			}
+
+			function fadeCurrentSlideOut(complete){
+				$(document).data("slideAnimationStarted", true);
+				var currentSlideElement = $(that.slides[currentSlideIndex].getSlideElement());
+				//var currentSlideElement = $(".slideObject");
+				$(currentSlideElement).css("display","inline-block").fadeOut(100, function(){
+						$(currentSlideElement).remove();
+						//$(document).data("slideAnimationStarted", false);
+						if(complete){
+							complete();
+						}
+				});
+			}
+
+			function fadeSlideIn(nextSlideIndex){
+				var currentSlideElement = $(that.slides[nextSlideIndex].getSlideElement());
+				$(currentSlideElement).css({
+					"display":"inline-block",
+					"opacity":0
+				});
+				$(slideSetSizer).append(currentSlideElement);
+				$(currentSlideElement).animate({
+					"opacity":1
+				}, {
+						complete: function(){
+							$(document).data("slideAnimationStarted", false);
+						},
+						duration: 100
+				});
+			}
+
+
+			function moveCurrentSlideLeftOut(){
+				$(document).data("slideAnimationStarted", true);
+				var currentSlideElement = $(that.slides[currentSlideIndex].getSlideElement());
+				//var currentSlideElement = $(".slideObject");
+				$(currentSlideElement).css("left","50%").animate({
+					"left":"0%",
+					"opacity":0
+				},
+				{
+					"complete":function(){
+						$(currentSlideElement).remove();
+						$(document).data("slideAnimationStarted", false);
+					}
+				});
+			}
+
+			function moveCurrentSlideRightOut(){
+				$(document).data("slideAnimationStarted", true);
+				var currentSlideElement = $(that.slides[currentSlideIndex].getSlideElement());
+				//var currentSlideElement = $(".slideObject");
+				$(currentSlideElement).css("left","50%").animate({
+					"left":"100%",
+					"opacity":0
+				},
+				{
+					"complete":function(){
+						$(currentSlideElement).remove();
+						$(document).data("slideAnimationStarted", false);
+					}
+				});
+			}
+
+			function moveSlideFromRightIn(){
+				var currentSlideElement = $(that.slides[currentSlideIndex].getSlideElement());
+				$(slideSetSizer).append(currentSlideElement);
+				$(currentSlideElement).css("left","100%").animate({
+					"left":"50%",
+					"opacity":1
+				});
+			}
+
+			function moveSlideFromLeftIn(){
+				var currentSlideElement = $(that.slides[currentSlideIndex].getSlideElement());
+				$(slideSetSizer).append(currentSlideElement);
+				$(currentSlideElement).css("left","0%").animate({
+					"left":"50%",
+					"opacity":1
+				});
+			}
+		}
+
+
+		$(slideSetSizer).click(function(){
+			var that = this;
+			$(placementElement).children().each(function(){
+				$(this).fadeIn();
+			});
+			$("#slides")
+
+
+			$(this).stop(true, false).animate({
+				"height":0,
+				"margin-top":0
+				},
+				{
+					complete:function(){
+						$(that).remove();
+						unlockscrolling();
+						$(document).unbind("keyup");
+						$(that).remove();
+					}
+				}
+			);
+
+			$("#slideSetSelctor").fadeOut(400, function(){
+				$(this).remove();
+			});
+		});
+	}
+}
+
+function cardFanSlideSets(element){
+	if(doesSVGForeignObjectExist()){
+		return;
+	}
+	console.log("entered!");
+	var slideSetArray = Array();
+	var slideSetDisplayArray = Array();
+	var totalSlideSets = $(element).children().length;
+	var containerDiv = $(element).parent();
+
+	function SlideSetDisplayElement(totalSlides, arrayPosition, seperationLength, src){
+		var elementID = "slideDisplay" + arrayPosition.toString();
+		var documentHeight = $(document).height();
+		var slideSetDisplayWidth = documentHeight*0.3;
+		var leftPull = -(slideSetDisplayWidth/2+seperationLength*totalSlides) + arrayPosition*seperationLength;
+		this.img = document.createElement("img");
+		$(this.img).attr({
+			"src":src,
+			"id":elementID
+		}).css({
+			"position":"absolute",
+			"height":Math.ceil(slideSetDisplayWidth),
+			"width":Math.ceil(slideSetDisplayWidth),
+			"left":"50%",
+			"margin-left":Math.ceil(leftPull),
+			"border-radius": "5px",
+			"-moz-border-radius": "5px",
+			"-webkit-border-radius": "5px"
+		});
+	}
+
+
+
+
+	$(element).remove();
+	$(element).children().each(function(index, element){
+		slideSetArray[index] = new SlideSetObject(element, "slideSet"+index.toString());
+		slideSetDisplayArray[index] = new SlideSetDisplayElement(totalSlideSets, index, 10, $(element).children("img").attr('src'));
+
+		$(containerDiv).append(slideSetDisplayArray[index].img);
+	});
+	console.log($(containerDiv).html());
+}
+
+function contactSlide(){
+	var currentFontsize =  $(".glow").css("font-size");
+	$(".glow").hover(function(){
+		$(".glow").animate({
+			"font-size": parseInt(currentFontsize)+10
+		}, 200);
+		$("#contact-title").fadeTo(200, 0.2);
+	}, function(){
+		$(".glow").animate({
+			"font-size": currentFontsize
+		}, 200);
+		$("#contact-title").fadeTo(200, 1);
+	})
 }
 
 //main
 (function(){
 	$(document).ready(function(){
+		initializeLoadingScreen();
 		var maskAspectRatio = 800/402;
 		var backGroundAspectRatio = 1920/1426;
 		console.log("javascript initialized!");
 		linkElementToViewPortHeight($('.cover'));
 		linkElementToViewPortHeight($('.content'));
 		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.transition'));
-		createTriangularTextWrappingSpace($('#about'), 15);
+			//createTriangularTextWrappingSpace($('#about'), 15);
 		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.center800'));
 		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.inner-transition'));
 		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide1"));
 		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide2"));
 		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide3"), false);
 		fixedPositionOnScrollPast($("#aboutme"));
-		createHexagonChain($("#work"),7, 10);
+		createHexagonChain($("#work"), 10, 1920, 1424);
+		//cardFanSlideSets($("#worklist"));
 		fixedPositionOnScrollPast($("#skills"));
 		fixedPositionOnScrollPast($("#work"));
 		scrollPastAndSlideUp($("#skills"), backGroundAspectRatio);
-//		scrollPastAndSlideUp($('#transition-slide2'), backGroundAspectRatio, $('#skills'));
-//		scrollPastAndSlideUp($("#aboutme"), backGroundAspectRatio, $("#skills"));
-		coreSkillsSlide($("#coreskills"), 180, 2, 200, 50);
+	//		scrollPastAndSlideUp($('#transition-slide2'), backGroundAspectRatio, $('#skills'));
+	//		scrollPastAndSlideUp($("#aboutme"), backGroundAspectRatio, $("#skills"));
 		horizontalCenter($("#coreskills"));
-		createTriangleTransitionSlide($("#transition-slide4"), "#2D2D3D");
+		if(doesSVGForeignObjectExist()){
+			createTriangleTransitionSlide($("#transition-slide4"), "#2D2D3D");
+		}
 		scrolling();
+		ieSpecificChecks();
+		coreSkillsSlide($("#coreskills"), 180, 2, 200, 50);
+
+//		The initial area of the occupied space by text is not accurate. Thus you have to use ludicrous angles
+//		to achieve the correct triangular effect
+		var triangleText = new createTriangularTextWrappingSpace2($("#about"), Math.PI*8);
+		triangleText.appendToElement();
+		contactSlide();
+		removeLoadingScreen();
 	});
 })();
