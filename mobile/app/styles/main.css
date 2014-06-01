@@ -1,0 +1,39 @@
+@font-face {
+ font-family: futura; src: url('../font/Futura%20(Light).ttf');
+}
+
+/*@font-face {*/
+ /*font-family: code; src: url('../font/CODE%20Bold.otf');*/
+/*}*/
+
+
+@font-face {
+ font-family: dense;
+ src: url('../font/dense-regular-webfont.eot?#iefix') format('embedded-opentype'); /* IE6-IE8 */
+ src: url('../font/dense-regular-webfont.eot'); /* IE9 Compat Modes */
+ src: url('../font/Dense-Regular.woff');
+ /*src: url('../font/Dense-Regular.otf');*/
+}
+
+body {
+    background: #fafafa;
+    font-family: futura;
+    color: #333;
+}
+
+.hero-unit {
+    margin: 0 auto;
+    max-width: 300px;
+    font-size: 18px;
+    font-weight: 200;
+    line-height: 30px;
+    background-color: #eee;
+    border-radius: 6px;
+    padding: 60px;
+}
+
+.hero-unit h1 {
+    font-size: 60px;
+    line-height: 1;
+    letter-spacing: -1px;
+}

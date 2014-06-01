@@ -3,3 +3,5 @@
 *.swp
 .ftppass
 node_modules
+dist
+
