@@ -1,8 +1,6 @@
 pyrofolium
 ==========
 
-my home page/portfolio
-
 Quick and dirty build and deploy instructions:
 
 make sure you have nodejs, npm and grunt installed.
