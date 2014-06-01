@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 					{
 						expand: true,
 						cwd: "./",
-						src: ['**', "!node_modules/**", "!mobile/**", "!deploy/**"],
+						src: ['**', "!node_modules/**", "!mobile/**", "!deploy/**", "!.gitignore", "!package.json", "!.ftppass"],
 						dest: 'deploy'
 					}
 				]
@@ -53,6 +53,17 @@ module.exports = function(grunt) {
 					'deploy/index.html':'deploy/index.html'
 				}
 			}
+		},
+		'ftp-deploy': {
+			deployment:{
+				auth:	{
+							host:'pyrofolium.com',
+							port: 21,
+							authKey: 'key1'
+						},
+				src:'deploy/',
+				dest: 'pyrofolium.com/'
+			}
 		}
 
 
@@ -72,6 +83,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-processhtml');
+	grunt.loadNpmTasks('grunt-ftp-deploy');
 	grunt.registerTask('build', [
 		'clean:deployment',
 		'copy:deployment',
@@ -81,6 +93,7 @@ module.exports = function(grunt) {
 		'processhtml:deployment',
 		'clean:removeold'
 	]);
+	grunt.registerTask('deploy', ['build', 'ftp-deploy']);
 
 
 }

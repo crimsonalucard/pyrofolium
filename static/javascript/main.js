@@ -220,7 +220,6 @@ function keepAspectRatioByAdjustingHeight(aspect, element){
 function verticalCenter(innerElement){
 
 	function syncCenter(){
-		var outerHeight = $(innerElement).parent().height();
 		var innerHeight = $(innerElement).outerHeight();
 
 		$(innerElement).css({
@@ -496,6 +495,10 @@ function createTriangularTextWrappingSpace(element, resolution, angleOfPoint){
 }
 
 function createMaskedImage(i, width, backimage, backmask, borderWidth, customXOffset, customYOffset, defaultBackgroundColor){
+	if(!backimage){
+		backimage = "";
+	}
+
 
 	var div = document.createElement('div');
 	//var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
@@ -546,6 +549,7 @@ function createMaskedImage(i, width, backimage, backmask, borderWidth, customXOf
 			display:"inline-block",
 			"position":"absolute"
 		});
+
 		$(backgroundColorCover).css({
 			"width":"100%",
 			"height":"100%",
@@ -641,7 +645,6 @@ function createMaskedImage(i, width, backimage, backmask, borderWidth, customXOf
 			//console.log(element.innerHTML);
 			element.innerHTML = element.innerHTML + stringToAppend;
 		}
-		console.log("test", defaultBackgroundColor);
 		var rect = new customElementString("rect",{
 			"width":"100%",
 			"height":"100%",
@@ -998,7 +1001,6 @@ function createHexagonChain(element, borderWidth, backgroundWidth, backgroundHei
 		var hexagon = createMaskedImage(
 		index,
 		Math.floor(hexagonWidth),
-		//"static/images/cover_cubes.jpg",
 		slideSetArray[hexagonID].coverImage,
 		"static/images/hexagon_small.png",
 		borderWidth,
@@ -1842,7 +1844,6 @@ function SlideSetObject(listElement, associatedClickID){
 //	console.log($(listElement).children());
 	$(listElement).children().each(function(index, element){
 		if($(element).prop("tagName") === "IMG"){
-			console.log("coverimage", $(element).attr("src"));
 			that.coverImage = $(element).attr("src");
 		}
 	});
@@ -2068,7 +2069,6 @@ function SlideSetObject(listElement, associatedClickID){
 	this.clickID = associatedClickID;
 
 	this.createOverlay = function(placementElement){
-		console.log(this.clickID);
 		var slideSetSizer = document.createElement("div");
 
 		$(slideSetSizer).css({
@@ -2273,7 +2273,6 @@ function cardFanSlideSets(element){
 	if(doesSVGForeignObjectExist()){
 		return;
 	}
-	console.log("entered!");
 	var slideSetArray = Array();
 	var slideSetDisplayArray = Array();
 	var totalSlideSets = $(element).children().length;
@@ -2310,7 +2309,6 @@ function cardFanSlideSets(element){
 
 		$(containerDiv).append(slideSetDisplayArray[index].img);
 	});
-	console.log($(containerDiv).html());
 }
 
 function contactSlide(){
@@ -2331,10 +2329,10 @@ function contactSlide(){
 //main
 (function(){
 	$(document).ready(function(){
+		console.log("loading...");
 		initializeLoadingScreen();
 		var maskAspectRatio = 800/402;
 		var backGroundAspectRatio = 1920/1426;
-		console.log("javascript initialized!");
 		linkElementToViewPortHeight($('.cover'));
 		linkElementToViewPortHeight($('.content'));
 		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.transition'));
@@ -2366,5 +2364,6 @@ function contactSlide(){
 		triangleText.appendToElement();
 		contactSlide();
 		removeLoadingScreen();
+		console.log("loading complete...");
 	});
 })();

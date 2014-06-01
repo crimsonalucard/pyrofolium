@@ -1,4 +1,5 @@
 .idea
 *.min.js
 *.swp
+.ftppass
 node_modules
