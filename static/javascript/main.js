@@ -2320,7 +2320,7 @@ function cardFanSlideSets(element){
 }
 
 function contactSlide(){
-	var currentFontsize =  $(".glow").css("font-size");
+	var currentFontsize =  $(".glow").css("fonts-size");
 	$(".glow").hover(function(){
 		$(".glow").animate({
 			"font-size": parseInt(currentFontsize)+10
@@ -2339,7 +2339,7 @@ function contactSlide(){
 	//run immediately
 	if(window.mobilecheck()){
 		//redirect if browser is mobile
-		window.location = "mobile/app/index.html";
+		window.location = "mobile/";
 	}
 
 

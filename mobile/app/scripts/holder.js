@@ -67,7 +67,7 @@ function draw(ctx, dimensions, template, ratio) {
 	if (ctx.measureText(text).width / width > 1) {
 		text_height = template.size / (ctx.measureText(text).width / width);
 	}
-	//Resetting font size if necessary
+	//Resetting fonts size if necessary
 	ctx.font = "bold " + (text_height * ratio) + "px "+font;
 	ctx.fillText(text, (width / 2), (height / 2), width);
 	return canvas.toDataURL("image/png");
@@ -233,7 +233,7 @@ var settings = {
 			size: 12
 		}
 	},
-	stylesheet: ".holderjs-fluid {font-size:16px;font-weight:bold;text-align:center;font-family:sans-serif;margin:0}"
+	stylesheet: ".holderjs-fluid {fonts-size:16px;fonts-weight:bold;text-align:center;fonts-family:sans-serif;margin:0}"
 };
 
 

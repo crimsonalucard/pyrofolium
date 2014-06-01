@@ -2,8 +2,8 @@
  font-family: futura; src: url('../font/Futura%20(Light).ttf');
 }
 
-/*@font-face {*/
- /*font-family: code; src: url('../font/CODE%20Bold.otf');*/
+/*@fonts-face {*/
+ /*fonts-family: code; src: url('../fonts/CODE%20Bold.otf');*/
 /*}*/
 
 
@@ -12,7 +12,7 @@
  src: url('../font/dense-regular-webfont.eot?#iefix') format('embedded-opentype'); /* IE6-IE8 */
  src: url('../font/dense-regular-webfont.eot'); /* IE9 Compat Modes */
  src: url('../font/Dense-Regular.woff');
- /*src: url('../font/Dense-Regular.otf');*/
+ /*src: url('../fonts/Dense-Regular.otf');*/
 }
 
 .overlay {

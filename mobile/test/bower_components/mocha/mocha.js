@@ -649,7 +649,7 @@ Progress.prototype.text = function(str){
 };
 
 /**
- * Set font size to `n`.
+ * Set fonts size to `n`.
  *
  * @param {Number} n
  * @return {Progress} for chaining
@@ -662,7 +662,7 @@ Progress.prototype.fontSize = function(n){
 };
 
 /**
- * Set font `family`.
+ * Set fonts `family`.
  *
  * @param {String} family
  * @return {Progress} for chaining
