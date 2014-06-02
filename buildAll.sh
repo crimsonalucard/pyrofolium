@@ -4,10 +4,10 @@ if [ -z "$1" ]
 		exit 1
 fi
 git commit -am $1
-git pull origin master
-git push origin master
-grunt deploy
-cd mobile
-grunt deploy
-cd ..
+#git pull origin master
+#git push origin master
+#grunt deploy
+#cd mobile
+#grunt deploy
+#cd ..
 
