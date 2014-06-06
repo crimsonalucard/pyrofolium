@@ -107,7 +107,7 @@
   </div>
 </div>
   <div class="fullscreenbg">
-	  <img src="../../static/images/footerrender2.png"/>
+	  <img src="../../static/images/footerrender2.png" style="display: none"/>
 	    <div class="jumbotron">
                 <h1>HELLO.</h1>
                 <p>My name is Brian.</p>
@@ -166,6 +166,23 @@
             (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
             g.src='//www.google-analytics.com/ga.js';
             s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+        <script type='text/javascript' src="//wurfl.io/wurfl.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script>
+	        console.log(WURFL.form_factor);
+	        if(WURFL.form_factor==="Smartphone"){
+
+		    	$("img").remove();
+		        $(".jumbotron").css({
+			        color:"black"
+		        })
+	        }
+	        else{
+		        $("img").css({
+			        display:"block"
+		        })
+	        }
         </script>
 
         <!-- build:js scripts/main.js -->
