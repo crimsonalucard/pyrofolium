@@ -96,6 +96,23 @@ body {
 	margin-top: -148px;
 }
 
+a {
+	color:#000000;
+	-webkit-transition: all 1s;
+	-moz-transition: all 1s;
+	-o-transition: all 1s;
+	-ms-transition: all 1s;
+	transition: all 1s;
+}
+
+a:hover {
+	color: #f8f8ff;
+}
+
+a:visited{
+	color:grey;
+}
+
 #skilltitle {
 	position: absolute;
 	width: 800px;

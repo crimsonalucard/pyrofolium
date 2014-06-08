@@ -6,7 +6,6 @@ if [ -z "$1" ]
 fi
 git commit -am $1
 git pull origin master
-git commit -am $1
 git push origin master
 grunt deploy
 cd mobile

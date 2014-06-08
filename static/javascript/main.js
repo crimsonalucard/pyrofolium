@@ -971,7 +971,11 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 	);
 }
 
-
+function mainPage(){
+	if(Modernizr.csstransforms && Modernizr.csstransitions) {
+		//do nothing....
+	}
+}
 
 
 function createHexagonChain(element, borderWidth, backgroundWidth, backgroundHeight){
@@ -1232,7 +1236,7 @@ function createHexagonChain(element, borderWidth, backgroundWidth, backgroundHei
 	}
 }
 
-function fixedPositionOnScrollPast(element){
+function fixedPositionOnScrollPastAndHandle(element, handleDown, handleUp){
 	if( getInternetExplorerVersion() !== -1)
 	{
 		return;
@@ -1259,7 +1263,7 @@ function fixedPositionOnScrollPast(element){
 			ieFixedBackgroundFlickerhack();
 			$(element).after(placeholderElement);
 
-
+		 	handleDown?handleDown():(function(){/*do nothing*/})();
 		}
 	}
 
@@ -1272,7 +1276,7 @@ function fixedPositionOnScrollPast(element){
 				"top":0
 			});
 			$(placeholderElement).remove();
-
+			handleUp?handleUp():(function(){/*do nothing*/})();
 		}
 	}
 
@@ -2383,6 +2387,17 @@ function contactSlide(){
 	})
 }
 
+function initializeSlideViews(){
+	$("#skills").css("visibility", "hidden");
+	$("#work").css("visibility", "hidden");
+	$("#contact").css("visibility", "hidden");
+	$("#transition-slide2").css("visibility", "hidden");
+	$("#transition-slide3").css("visibility", "hidden");
+
+//			$("#skills, #work, #contact, #transition-slide2, #transition-slide3").hide();
+
+}
+
 //main
 (function(){
 	//run immediately
@@ -2405,14 +2420,48 @@ function contactSlide(){
 			//createTriangularTextWrappingSpace($('#about'), 15);
 		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.center800'));
 		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.inner-transition'));
+		mainPage();
 		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide1"));
 		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide2"));
 		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide3"), false);
-		fixedPositionOnScrollPast($("#aboutme"));
+
+		initializeSlideViews();
+
+		fixedPositionOnScrollPastAndHandle($("#aboutme"), function(){
+			$("#skills").css("visibility", "visible");
+			$("#transition-slide2").css("visibility", "visible");
+			$("#transition-slide1").css("visibility", "hidden");
+
+
+		}, function(){
+			$("#transition-slide1").css("visibility", "visible");
+
+			$("#transition-slide2").css("visibility", "hidden");
+			$("#skills").css("visibility", "hidden");
+		});
 		createHexagonChain($("#work"), 10, 1920, 1424);
 		//cardFanSlideSets($("#worklist"));
-		fixedPositionOnScrollPast($("#skills"));
-		fixedPositionOnScrollPast($("#work"));
+
+		fixedPositionOnScrollPastAndHandle($("#skills"), function(){
+			$("#aboutme").css("visibility", "hidden");
+			$("#transition-slide2").css("visibility", "hidden");
+			$("#work").css("visibility", "visible");
+			$("#transition-slide3").css("visibility", "visible");
+		}, function(){
+			$("#transition-slide2").css("visibility", "visible");
+			$("#aboutme").css("visibility", "visible");
+
+			$("#transition-slide3").css("visibility", "hidden");
+			$("#work").css("visibility","hidden");
+		});
+		fixedPositionOnScrollPastAndHandle($("#work"), function(){
+			$("#contact").css("visibility","visible");
+		}, function(){
+			$("contact").css("visibility","hidden");
+
+			$("#tranistion-slide3").css("visibility", "visible");
+			$("#skills").css("visibility", "visible");
+		});
 		scrollPastAndSlideUp($("#skills"), backGroundAspectRatio);
 	//		scrollPastAndSlideUp($('#transition-slide2'), backGroundAspectRatio, $('#skills'));
 	//		scrollPastAndSlideUp($("#aboutme"), backGroundAspectRatio, $("#skills"));
