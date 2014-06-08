@@ -2321,16 +2321,65 @@ function cardFanSlideSets(element){
 
 function contactSlide(){
 	var currentFontsize =  $(".glow").css("font-size");
-	$(".glow").hover(function(){
-		$(".glow").animate({
-			"font-size": parseInt(currentFontsize)+10
-		}, 200);
-		$("#contact-title").fadeTo(200, 0.2);
+	$(".email").hover(function(){
+
+		if(!Modernizr.csstransitions) {
+			$(".glow").animate({
+				"font-size": parseInt(currentFontsize) + 10
+			}, 1000);
+			$("#contact-title").fadeTo(1000, 0.2);
+		} else {
+			$("#contact-title, .emails").css({
+				"-webkit-transition": "all 1s",
+				"-moz-transition": "all 1s",
+				"-o-transition": "all 1s",
+				"-ms-transition": "all 1s",
+				"transition": "all 1s"
+			});
+
+			if(Modernizr.csstransforms) {
+				$(".emails").css({
+					"-webkit-transform": "scale(1.25)",
+					"-moz-transform": "scale(1.25)",
+					"-ms-transform": "scale(1.25)",
+					"-o-transform": "scale(1.25)",
+					"transform": "scale(1.25)"
+				});
+			}else{
+				$(".glow").css({
+					"font-size": parseInt(currentFontsize)+10
+				});
+			}
+
+
+			$("#contact-title").css({
+				"opacity": 0.2
+			});
+		}
 	}, function(){
-		$(".glow").animate({
-			"font-size": currentFontsize
-		}, 200);
-		$("#contact-title").fadeTo(200, 1);
+		if(!Modernizr.csstransitions) {
+			$(".glow").animate({
+				"font-size": currentFontsize
+			}, 200);
+			$("#contact-title").fadeTo(200, 1);
+		} else {
+			if(Modernizr.csstransforms) {
+				$(".emails").css({
+					"-webkit-transform": "scale(1)",
+					"-moz-transform": "scale(1)",
+					"-ms-transform": "scale(1)",
+					"-o-transform": "scale(1)",
+					"transform": "scale(1)"
+				});
+			} else {
+				$(".glow").css({
+					"font-size":currentFontsize
+				});
+			}
+			$("#contact-title").css({
+				"opacity": 1
+			});
+		}
 	})
 }
 

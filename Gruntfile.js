@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 			deployment:	{
 				files:	{
 					'deploy/static/css/combined.css':['deploy/static/css/reset.css', 'deploy/static/css/style.css'],
-					'deploy/static/javascript/combined.js':['deploy/static/javascript/main.js']
+					'deploy/static/javascript/combined.js':['deploy/static/javascript/modernizr.js','deploy/static/javascript/main.js']
 				}
 			}
 		},
