@@ -933,6 +933,7 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		"background-attachment": 'fixed',
 		"background-repeat": 'no-repeat',
 		"background-position": 'center',
+		"background-size":"auto 100%",
 		"-webkit-mask-image": firstMaskString,
 		"-webkit-mask-repeat": 'no-repeat',
 		"-webkit-mask-position-x": "50%",
