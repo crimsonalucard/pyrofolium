@@ -922,7 +922,7 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		style:"mask: url(#arrowmask"+randomID+");"
 	});
 
-	var backgroundString =  'url(static/images/cover_cubes.jpg)';
+	var backgroundString =  'url(static/images/cover_cubes_reduced.jpg)';
 	if(backgroundImage){
 		backgroundString = 'url('+backgroundImage+')';
 	}
