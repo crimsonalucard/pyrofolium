@@ -37,6 +37,7 @@ body {
 	color: #373E44;
 	font-size: 12;
 	overflow-x: hidden;
+	-webkit-backface-visibility: hidden;
 }
 
 
