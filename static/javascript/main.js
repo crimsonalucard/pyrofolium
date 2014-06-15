@@ -2398,6 +2398,33 @@ function initializeSlideViews(){
 //			$("#skills, #work, #contact, #transition-slide2, #transition-slide3").hide();
 
 }
+function createNoCubeBgElementAfterElement(element){
+	var div = document.createElement("div");
+	$(div).addClass("nocubeBGChrome");
+	$(element).prepend(div);
+	return div;
+}
+
+function doesCSSExist(css){
+	return css in document.body.style;
+}
+
+function executeIfBackfaceVisibilityExists(toExecute){
+	if(doesCSSExist("webkitBackfaceVisibility")){
+		toExecute();
+	}
+}
+
+function createNoCubeBgElementIfBackFaceExists(element, id){
+	executeIfBackfaceVisibilityExists(function(){
+		var div = createNoCubeBgElementAfterElement(element);
+		$(div).attr("id", id);
+	})
+}
+
+function chromeOptimizations(){
+	createNoCubeBgElementIfBackFaceExists($("#aboutme"), "aboutmeBG");
+}
 
 //main
 (function(){
@@ -2413,6 +2440,7 @@ function initializeSlideViews(){
 	$(document).ready(function(){
 		console.log("loading...");
 		initializeLoadingScreen();
+		chromeOptimizations();
 		var maskAspectRatio = 800/402;
 		var backGroundAspectRatio = 1920/1426;
 		linkElementToViewPortHeight($('.cover'));
