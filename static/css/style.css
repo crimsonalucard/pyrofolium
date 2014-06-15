@@ -38,6 +38,7 @@ body {
 	font-size: 12;
 	overflow-x: hidden;
 	-webkit-backface-visibility: hidden;
+	z-index: -2;
 }
 
 
@@ -180,7 +181,7 @@ a:visited{
 }
 
 #front-content{
-	z-index:-1;
+	z-index:-2;
 }
 
 .defaultBG{

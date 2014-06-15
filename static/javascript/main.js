@@ -2424,7 +2424,101 @@ function createNoCubeBgElementIfBackFaceExists(element, id){
 
 function chromeOptimizations(){
 	createNoCubeBgElementIfBackFaceExists($("#aboutme"), "aboutmeBG");
+
+
+	(function setUpFixedBGSForChromOnly(){
+		executeIfBackfaceVisibilityExists(function(){
+			bindParallax($("#aboutmeBG"), true);
+		});
+	})();
 }
+
+function bindParallax(element, enabledOrDisabled){
+	var element = element;
+	var parent = $(element).parent();
+	var parentElementPosition = $(parent).offset().top;
+
+	if(enabledOrDisabled) {
+		$(element).data("bindEnabled", enabledOrDisabled);
+	}
+	$(element).data("position", $(element).css("position"));
+	var handler = function(){
+			window.requestAnimationFrame(function () {
+				if($(element).data("bindEnabled") === true) {
+					//			$.data(element, "top", $(element).css("top"));
+					var currentScrollPosition = $(window).scrollTop();
+					var currentElementPosition = $(element).offset().top;
+
+					$(element).css({
+						position: "absolute",
+						top: currentScrollPosition-parentElementPosition
+					});
+				}
+			});
+	};
+
+	$(window).on("scroll", handler);
+	//return to allow unbinding later...
+	return handler;
+}
+
+function unbindParallax(element, handler){
+//	console.log(handler);
+	$(window).off("scroll", handler);
+	$(element).css({
+		position:$(element).data("position"),
+		top:"0"
+	});
+//	console.log(element);
+}
+
+function enableParrallax(element){
+	$(element).data("bindEnabled", true);
+}
+
+function disableParallax(element){
+	$(element).data("bindEnabled", false);
+	$(element).css({
+		position:$(element).data("position"),
+		top:"auto"
+	});
+}
+
+function scrollPastAndHandle2(element, downHandler, upHandler){
+	var initialScrollPosition = $(window).scrollTop();
+	var elementScrollPosition = $(element).offset().top;
+	//console.log($(window).scrollTop(), elementScrollPosition);
+	var newDownHandler = function(){
+		if($.data(element, "scrollDownHandling") && $(window).scrollTop()>elementScrollPosition) {
+//			$(window).unbind("scroll", newDownHandler); //can't recursively unbind in javascript for some reason...
+			$.data(element, "scrollDownHandling", false);
+			$.data(element, "scrollUpHandling", true);
+			downHandler();
+			$(window).scroll(newUpHandler);
+		}
+	}
+	var newUpHandler = function(){
+		if($.data(element, "scrollUpHandling") && $(window).scrollTop()<elementScrollPosition){
+			$.data(element, "scrollDownHandling", true);
+			$.data(element, "scrollUpHandling", false);
+			upHandler();
+			$(window).scroll(newDownHandler);
+		}
+	}
+
+	if(initialScrollPosition<elementScrollPosition){
+		$.data(element, "scrollDownHandling", true);
+		$.data(element, "scrollUpHandling", false);
+		$(window).scroll(function(){
+			newDownHandler();
+		});
+	} else {
+		$.data(element, "scrollUpHandling", true);
+		$.data(element, "scrollDownHandling", false);
+		$(window).scroll(newUpHandler);
+	}
+}
+
 
 //main
 (function(){
@@ -2440,7 +2534,6 @@ function chromeOptimizations(){
 	$(document).ready(function(){
 		console.log("loading...");
 		initializeLoadingScreen();
-		chromeOptimizations();
 		var maskAspectRatio = 800/402;
 		var backGroundAspectRatio = 1920/1426;
 		linkElementToViewPortHeight($('.cover'));
@@ -2507,6 +2600,7 @@ function chromeOptimizations(){
 		var triangleText = new createTriangularTextWrappingSpace2($("#about"), Math.PI*8);
 		triangleText.appendToElement();
 		contactSlide();
+		chromeOptimizations();
 		removeLoadingScreen();
 		console.log("loading complete...");
 	});
