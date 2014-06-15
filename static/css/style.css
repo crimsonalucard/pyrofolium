@@ -147,6 +147,11 @@ a:visited{
 	margin-left: -400px;
 	left: 50%;
 	text-align: center;
+	z-index: -2;
+}
+
+#skillsBG{
+	z-index: 0;
 }
 
 .paleborder{

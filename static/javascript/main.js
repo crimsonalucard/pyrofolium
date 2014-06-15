@@ -2424,13 +2424,65 @@ function createNoCubeBgElementIfBackFaceExists(element, id){
 
 function chromeOptimizations(){
 	createNoCubeBgElementIfBackFaceExists($("#aboutme"), "aboutmeBG");
+	createNoCubeBgElementIfBackFaceExists($("#skills"), "skillsBG");
+//	function setElementToAbsoluteTopZero(element){
+//		var that = this;
+//		this.element = element;
+//		this.execute = function(){
+//			if(that.off !== true){
+//				console.log("setting to zero!");
+//				$(that.element).css({
+//					position:"absolute",
+//					top: 0
+//				});
+//				that.off = true;
+//			}
+//		}
+//	}
 
+	var transitionslide1position = $("#transition-slide1").offset().top;
+	var transitionslide2position = $("#transition-slide2").offset().top;
+	var aboutmeposition =  $("#aboutme").offset().top;
+	var skillsposition =  $("#skills").offset().top;
+	var moveTriUpEnabled = true;
+	var windowHieght = $(window).height()*3;
+	$("#skillsBG").css({
+		"-webkit-transition": "all 200ms ease"
+	});
 
-	(function setUpFixedBGSForChromOnly(){
-		executeIfBackfaceVisibilityExists(function(){
-			bindParallax($("#aboutmeBG"), true);
-		});
-	})();
+//	var setAboutBGToZero = new setElementToAbsoluteTopZero($("#aboutmeBG"));
+//	var setSkillsBGToZero = new setElementToAbsoluteTopZero($("#skillsBG"));
+	$(window).scroll(function(){
+		var currentPosition = $(window).scrollTop();
+		if(currentPosition > transitionslide1position && currentPosition<aboutmeposition){
+			$("#aboutmeBG").css({
+				top: currentPosition-aboutmeposition
+			});
+		}else{
+			$("#aboutmeBG").css({
+				top: 0
+			});
+		}
+		if(currentPosition > transitionslide2position && currentPosition<skillsposition){
+			$("#skillsBG").css({
+				"-webkit-transition": "none !important",
+				top: currentPosition-skillsposition
+			});
+		}
+		if(currentPosition > skillsposition && moveTriUpEnabled){
+			moveTriUpEnabled = false;
+			$("#skillsBG").css({
+				"-webkit-transition": "all 200ms ease",
+				"-webkit-transform": "translateY(-"+windowHieght+"px)"
+			});
+		} else if(!moveTriUpEnabled && currentPosition <skillsposition && currentPosition > transitionslide2position){
+			moveTriUpEnabled = true;
+			$("#skillsBG").css({
+				"-webkit-transform": "translateY(0px)"
+			});
+		}
+
+	});
 }
 
 function bindParallax(element, enabledOrDisabled){
