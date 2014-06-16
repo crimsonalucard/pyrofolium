@@ -892,7 +892,7 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 
 	foreignObject = $(foreignObject).attr({
 		width:"100%",
-		height:"100%",
+		height:"100%"
 //		style:"mask: url(#trianglemask"+randomID+");"
 	});
 
@@ -1267,16 +1267,25 @@ function createHexagonChain(element, borderWidth, backgroundWidth, backgroundHei
 		$('#'+slideSetArray[key].clickID).click(function(){
 
 			$("#work").children().each(function(){
-				$(this).fadeOut();
-			});
-
-			$('html, body').animate({
-				scrollTop: $("#contact").offset().top - 2*$("#contact").height()
-			}, {
-				complete:function(){
-					lockscrolling();
+				if(!Modernizr.csstransitions) {
+					$(this).fadeOut();
+				}else {
+					$(this).css({
+						opacity: 0,
+						"-webkit-transition": "all 200ms ease",
+						"-moz-transition": "all 200ms ease",
+						"-ms-transition": "all 200ms ease",
+						"-o-transition": "all 200ms ease",
+						"transition": "all 200ms ease"
+					});
 				}
 			});
+
+			$('html, body').css({
+				scrollTop: $('#work').offset().top//$("#contact").offset().top - 2*$("#contact").height()
+			});
+			lockscrolling();
+
 
 			slideSetArray[$(this).attr('id')].createOverlay($('#work'));
 		});
@@ -1795,7 +1804,7 @@ function createTriangleTransitionSlide(element, color, upper, uppercolor, backgr
 
 		$(svg).attr({
 			"width":$(element).width(),
-			"height":$(element).height(),
+			"height":$(element).height()
 		});
 		$(svg).css({
 			"pointer-events":"none",
@@ -2146,12 +2155,23 @@ function SlideSetObject(listElement, associatedClickID){
 
 		$(placementElement).append(slideSetSizer);
 		$(placementElement).append(that.createSlideToolsElement((9/8)*docHeight)).fadeIn();
-
-		$(slideSetSizer).stop(true, false).animate({
-				"height":Math.ceil(3*docHeight/4),
-				"margin-top":-Math.ceil(3*docHeight/8)
-			}
-		);
+		if(!Modernizr.csstransitions) {
+			$(slideSetSizer).stop(true, false).animate({
+					"height": Math.ceil(3 * docHeight / 4),
+					"margin-top": -Math.ceil(3 * docHeight / 8)
+				}
+			);
+		} else {
+			$(slideSetSizer).css({
+				"height": Math.ceil(3 * docHeight / 4),
+				"margin-top": -Math.ceil(3 * docHeight / 8),
+				"-webkit-transition": "all 200ms ease",
+				"-moz-transition": "all 200ms ease",
+				"-ms-transition": "all 200ms ease",
+				"-o-transition": "all 200ms ease",
+				"transition": "all 200ms ease"
+			})
+		}
 
 		$(document).data("slideAnimationStarted", false);
 
@@ -2283,24 +2303,53 @@ function SlideSetObject(listElement, associatedClickID){
 
 			var that = this;
 			$(placementElement).children().each(function(){
-				$(this).fadeIn();
+				$(this).css({
+					opacity:1,
+					"-webkit-transition": "all 200ms ease",
+					"-moz-transition": "all 200ms ease",
+					"-ms-transition": "all 200ms ease",
+					"-o-transition": "all 200ms ease",
+					"transition": "all 200ms ease"
+				});
 			});
 			$(placementElement).css("z-index",zindex);
 
-
-			$(this).stop(true, false).animate({
-				"height":0,
-				"margin-top":0
-				},
-				{
-					complete:function(){
-						$(that).remove();
-						unlockscrolling();
-						$(document).unbind("keyup");
-						$(that).remove();
+			if(!Modernizr.csstransitions) {
+				$(this).stop(true, false).animate({
+					"height":0,
+					"margin-top":0
+					},
+					{
+						complete:function(){
+							$(that).remove();
+							unlockscrolling();
+							$(document).unbind("keyup");
+							$(that).remove();
+						}
 					}
+				);
+			} else {
+				function complete() {
+					$(that).remove();
+					unlockscrolling();
+					$(document).unbind("keyup");
+					$(that).remove();
 				}
-			);
+
+				$(this).css({
+					height: 0,
+					"margin-top": 0,
+					"-webkit-transition": "all 200ms ease",
+					"-moz-transition": "all 200ms ease",
+					"-ms-transition": "all 200ms ease",
+					"-o-transition": "all 200ms ease",
+					"transition": "all 200ms ease"
+				})
+					.on("transitionend", complete)
+					.on("webkitTransitionEnd", complete)
+					.on("oTransitionEnd", complete);
+			}
+
 
 			$("#slideSetSelctor").fadeOut(400, function(){
 				$(this).remove();
