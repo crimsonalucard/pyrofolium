@@ -975,15 +975,15 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 	if(doesCSSExist("webkitBackfaceVisibility")){
 		$(div1).css({
 			"background-attachment":"scroll",
-			"background-size":"100% auto"
+			"background-size":"auto "+$(window).height()+"px"
 		}).attr("id", "parallaxbg-"+$(element).attr("id"));
 	}else{
 		$(div1).css({
-			"-webkit-mask-image": firstMaskString,
-			"-webkit-mask-repeat": 'no-repeat',
-			"-webkit-mask-position-x": "50%",
-			"-webkit-mask-position-y": "100%",
-			"-webkit-mask-size": "100%"
+//			"-webkit-mask-image": firstMaskString,
+//			"-webkit-mask-repeat": 'no-repeat',
+//			"-webkit-mask-position-x": "50%",
+//			"-webkit-mask-position-y": "100%",
+//			"-webkit-mask-size": "100%"
 		});
 	}
 
