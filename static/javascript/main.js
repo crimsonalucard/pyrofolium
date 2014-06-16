@@ -2432,25 +2432,19 @@ function initializeSlideViews(){
 //			$("#skills, #work, #contact, #transition-slide2, #transition-slide3").hide();
 
 }
-function createNoCubeBgElementAfterElement(element, seperateContentFromBG){
+function createNoCubeBgElementAfterElement(element, customBG){
 	var div = document.createElement("div");
 	$(div).addClass("nocubeBGChrome");
 	var html = $(element).html();
 	$(element).html("");
 	$(element).prepend(div);
 	$(div).html(html);
-//	if(seperateContentFromBG){
-//		$(div).css({
-//			"background-image":"none",
-//			"background-color":"transparent"
-//		});
-//		var bgDiv = document.createElement("div");
-//		$(bgDiv).addClass("nocubeBGChrome").css({
-//			"z-index":0
-//		});
-//		$(element).append(bgDiv);
-//		return bgDiv
-//	}
+	if(customBG){
+		$(div).css({
+			"background-image":"none"
+		});
+	}
+
 	return div;
 }
 
@@ -2464,9 +2458,9 @@ function executeIfBackfaceVisibilityExists(toExecute){
 	}
 }
 
-function createNoCubeBgElementIfBackFaceExists(element, id, seperateContentFromBG){
+function createNoCubeBgElementIfBackFaceExists(element, id, customBG){
 	executeIfBackfaceVisibilityExists(function(){
-		var div = createNoCubeBgElementAfterElement(element, seperateContentFromBG);
+		var div = createNoCubeBgElementAfterElement(element, customBG);
 		$(div).attr("id", id);
 	});
 }
@@ -2476,7 +2470,8 @@ function chromeOptimizations(){
 		return;
 	}
 	createNoCubeBgElementIfBackFaceExists($("#aboutme"), "aboutmeBG");
-	createNoCubeBgElementIfBackFaceExists($("#skills"), "skillsBG", true);
+	createNoCubeBgElementIfBackFaceExists($("#skills"), "skillsBG");
+	createNoCubeBgElementIfBackFaceExists($("#work"), "workBG", "none");
 //	function setElementToAbsoluteTopZero(element){
 //		var that = this;
 //		this.element = element;
@@ -2493,6 +2488,7 @@ function chromeOptimizations(){
 //	}
 	var $aboutmeBG = $("#aboutmeBG");
 	var $skillsBG = $("#skillsBG");
+	var $workBG = $("#workBG");
 	var $parallaxbg1 = $("#parallaxbg-transition-slide1");
 	var $parallaxbg2 = $("#parallaxbg-transition-slide2");
 	var $parallaxbg3 = $("#parallaxbg-transition-slide3");
@@ -2543,13 +2539,15 @@ function chromeOptimizations(){
 
 			if (currentPosition > transitionslide1position && currentPosition < aboutmeposition) {
 				$aboutmeBG.css({
-					top: currentPosition - aboutmeposition
+					top: currentPosition - aboutmeposition,
 				});
 			} else {
 				$aboutmeBG.css({
 					top: 0
 				});
 			}
+
+
 			if (currentPosition > transitionslide2position && currentPosition < skillsposition) {
 				 $skillsBG.css({
 					"transition": "none !important",
@@ -2573,6 +2571,18 @@ function chromeOptimizations(){
 					"transition": "all 500ms ease",
 //					"-webkit-transform": "translateY(-" + windowHieght + "px)"
 					 "background-position":"50% -"+windowHieght.toString()+"px"
+				});
+			}
+			if(currentPosition>transitionslide3position && currentPosition<workposition)
+			{
+				$workBG.css({
+					top:currentPosition-workposition,
+					"z-index":0
+				});
+			}
+			else{
+				$workBG.css({
+					top:0
 				});
 			}
 		});
