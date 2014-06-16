@@ -607,6 +607,14 @@ function createMaskedImage(i, width, backimage, backmask, borderWidth, customXOf
 			"overflow":"hidden"
 		});
 
+		if(doesCSSExist("webkitBackfaceVisibility")){
+			$(div2).css({
+				"background-attachment":"scroll"
+			});
+		}
+
+
+
 		//create structure
 		//$(div2).append(img);
 		$(defs).prepend(mask);
@@ -722,6 +730,14 @@ function createMaskedImage(i, width, backimage, backmask, borderWidth, customXOf
 		"overflow":"hidden"
 	});
 
+	if(doesCSSExist("webkitBackfaceVisibility")){
+		$(div2).css({
+			"background-attachment":"scroll"
+		});
+	}
+
+
+
 	//create structure
 	//$(div2).append(img);
 
@@ -766,7 +782,12 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 	if(secondBackgroundImage){
 		secondBackgroundImage = "url("+secondBackgroundImage+")";
 	}else{
-		secondBackgroundImage = "url(static/images/no_cube.jpg)";
+		if(doesCSSExist("webkitBackfaceVisibility")){
+			secondBackgroundImage="none"
+		}
+		else {
+			secondBackgroundImage = "url(static/images/no_cube.jpg)";
+		}
 	}
 
 
@@ -794,20 +815,27 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 	else{
 		secondMask = "static/images/triangle.png";
 	}
+	if(doesCSSExist("webkitBackfaceVisibility")){
+		secondMaskString = "none";
+	}
 
 
 	$(section).css({
-		"overflow":"hidden",
+//		"overflow":"hidden",
 		"width": "100%",
 		"position": "relative",
-		"mask": secondMaskString,
-		"-webkit-mask-image": secondMaskString,
-		"-webkit-mask-repeat": "no-repeat",
-		"-webkit-mask-position-x": "50%",
-		"-webkit-mask-position-y": "100%",
-		"-webkit-mask-size": "100%",
 		"pointer-events": "none"
 	});
+	if(!doesCSSExist("webkitBackfaceVisibility")){
+		$(section).css({
+			"mask": secondMaskString,
+			"-webkit-mask-image": secondMaskString,
+			"-webkit-mask-repeat": "no-repeat",
+			"-webkit-mask-position-x": "50%",
+			"-webkit-mask-position-y": "100%",
+			"-webkit-mask-size": "100%"
+		});
+	}
 
 	$(section).attr({
 		'class':'js-generated',
@@ -830,8 +858,9 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		"margin-left": negativeHalfWidth,
 		"position":"absolute",
 		"left":"50%",
-		"bottom":"0%",
-		"pointer-events": "none"
+		"bottom":"-10%",
+		"pointer-events": "none",
+		"z-index": 1
 	});
 	if(isString(width)){
 		$(sizeDiv).height(Math.floor((1/aspect)*$(window).width()));
@@ -878,19 +907,25 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 
 
 	$(section1).css({
-		"-webkit-mask-image": secondMaskString,
-		"-webkit-mask-repeat": "no-repeat",
-		"-webkit-mask-position-x": "50%",
-		"-webkit-mask-position-y": "100%",
-		"-webkit-mask-size": "100%",
-		"background-color": "#D2CCC9",
-		"background-image": secondBackgroundImage,
-		"background-attachment": 'fixed',
+		"background-attachment": 'scroll',
 		"background-repeat": 'no-repeat',
 		"background-size": "100%",
 		"background-position": "top",
 		"pointer-events": "none"
 	});
+
+	if(!doesCSSExist("webkitBackfaceVisibility")){
+		$(section1).css({
+			"background-attachment":"fixed",
+			"-webkit-mask-image": secondMaskString,
+			"-webkit-mask-repeat": "no-repeat",
+			"-webkit-mask-position-x": "50%",
+			"-webkit-mask-position-y": "100%",
+			"-webkit-mask-size": "100%",
+//			"background-color": "#D2CCC9",
+			"background-image": secondBackgroundImage
+		});
+	}
 
 	$(section1).height(Math.floor((1/aspect)*width));
 
@@ -934,13 +969,23 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		"background-repeat": 'no-repeat',
 		"background-position": 'center',
 		"background-size":"auto 100%",
-		"-webkit-mask-image": firstMaskString,
-		"-webkit-mask-repeat": 'no-repeat',
-		"-webkit-mask-position-x": "50%",
-		"-webkit-mask-position-y": "100%",
-		"-webkit-mask-size": "100%",
 		"pointer-events": "none"
 	});
+
+	if(doesCSSExist("webkitBackfaceVisibility")){
+		$(div1).css({
+			"background-attachment":"scroll",
+			"background-size":"100% auto"
+		}).attr("id", "parallaxbg-"+$(element).attr("id"));
+	}else{
+		$(div1).css({
+			"-webkit-mask-image": firstMaskString,
+			"-webkit-mask-repeat": 'no-repeat',
+			"-webkit-mask-position-x": "50%",
+			"-webkit-mask-position-y": "100%",
+			"-webkit-mask-size": "100%"
+		});
+	}
 
   	$(div1).height(Math.floor((1/aspect)*width));
 
@@ -1864,10 +1909,7 @@ function SlideSetObject(listElement, associatedClickID){
 	function SlideObject(setOfElements){
 		var that = this;
 		var htmlString = "";
-		var finalElement = document.createElement("div");
-		var outerDiv = document.createElement("div");
 		var slideSizer = document.createElement("div");
-		var verticalHeight = $(window).height();
 
 		//vertical centering hack...
 		$(slideSizer).css({
@@ -1876,30 +1918,8 @@ function SlideSetObject(listElement, associatedClickID){
   			"vertical-align": "middle"
 		});
 
-//		$(outerDiv).css({
-//			height:"50%",
-//			float: "left",
-//			"margin-bottom":-Math.ceil(verticalHeight*0.32)
-//		});
 
-//		$(finalElement).css({
-//			//display:"table-cell",
-////			"vertical-align":"middle",
-////			width:"100%",
-////			position:"relative",
-////			padding:"3%"
-//			//display:"table-cell"
-//			"clear":"both",
-//			"height":Math.ceil(verticalHeight*0.64),
-//			"position":"relative"
-//		});
-
-//		$(slideSizer).append(outerDiv);
-//		$(slideSizer).append(finalElement);
-
-		//console.log($(setOfElements).children());
 		$(setOfElements).children().each(function(index, element){
-			//console.log($(element).prop("tagName"));
 			if($(element).prop("tagName") === "H3"){
 				that.h3 = document.createElement("H3");
 				$(that.h3).html($(element).html()).css({
@@ -1908,7 +1928,6 @@ function SlideSetObject(listElement, associatedClickID){
 					"text-align":"center"
 				});
 				htmlString += $(that.h3)[0].outerHTML;
-//				$(finalElement).append(that.h3);
 				$(slideSizer).append(that.h3);
 
 
@@ -1922,8 +1941,6 @@ function SlideSetObject(listElement, associatedClickID){
 					"margin-left":"auto",
 					"margin-right":"auto",
 					"display":"block"
-					//"border":$(element).attr("class") === "noStyling"? "none":"solid",
-					//"border-color":"#D2CCC9"
 				});
 
 				if($(element).attr("class") !== "noStyling"){
@@ -1938,7 +1955,6 @@ function SlideSetObject(listElement, associatedClickID){
 				}
 
 				htmlString += $(that.image)[0].outerHTML;
-//				$(finalElement).append(that.image);
 				$(slideSizer).append(that.image);
 
 			}else if($(element).prop("tagName") === "P"){
@@ -2082,6 +2098,8 @@ function SlideSetObject(listElement, associatedClickID){
 	this.clickID = associatedClickID;
 
 	this.createOverlay = function(placementElement){
+		var zindex = $(placementElement).data("z-index", $(placementElement).css("z-index"));
+		$(placementElement).css("z-index", 10);
 		var slideSetSizer = document.createElement("div");
 
 		$(slideSetSizer).css({
@@ -2254,11 +2272,12 @@ function SlideSetObject(listElement, associatedClickID){
 
 
 		$(slideSetSizer).click(function(){
+
 			var that = this;
 			$(placementElement).children().each(function(){
 				$(this).fadeIn();
 			});
-			$("#slides")
+			$(placementElement).css("z-index",zindex);
 
 
 			$(this).stop(true, false).animate({
@@ -2280,48 +2299,6 @@ function SlideSetObject(listElement, associatedClickID){
 			});
 		});
 	}
-}
-
-function cardFanSlideSets(element){
-	if(doesSVGForeignObjectExist()){
-		return;
-	}
-	var slideSetArray = Array();
-	var slideSetDisplayArray = Array();
-	var totalSlideSets = $(element).children().length;
-	var containerDiv = $(element).parent();
-
-	function SlideSetDisplayElement(totalSlides, arrayPosition, seperationLength, src){
-		var elementID = "slideDisplay" + arrayPosition.toString();
-		var documentHeight = $(document).height();
-		var slideSetDisplayWidth = documentHeight*0.3;
-		var leftPull = -(slideSetDisplayWidth/2+seperationLength*totalSlides) + arrayPosition*seperationLength;
-		this.img = document.createElement("img");
-		$(this.img).attr({
-			"src":src,
-			"id":elementID
-		}).css({
-			"position":"absolute",
-			"height":Math.ceil(slideSetDisplayWidth),
-			"width":Math.ceil(slideSetDisplayWidth),
-			"left":"50%",
-			"margin-left":Math.ceil(leftPull),
-			"border-radius": "5px",
-			"-moz-border-radius": "5px",
-			"-webkit-border-radius": "5px"
-		});
-	}
-
-
-
-
-	$(element).remove();
-	$(element).children().each(function(index, element){
-		slideSetArray[index] = new SlideSetObject(element, "slideSet"+index.toString());
-		slideSetDisplayArray[index] = new SlideSetDisplayElement(totalSlideSets, index, 10, $(element).children("img").attr('src'));
-
-		$(containerDiv).append(slideSetDisplayArray[index].img);
-	});
 }
 
 function contactSlide(){
@@ -2439,136 +2416,88 @@ function chromeOptimizations(){
 //			}
 //		}
 //	}
-
+	var $aboutmeBG = $("#aboutmeBG");
+	var $skillsBG = $("#skillsBG");
+	var $parallaxbg1 = $("#parallaxbg-transition-slide1");
+	var $parallaxbg2 = $("#parallaxbg-transition-slide2");
+	var $parallaxbg3 = $("#parallaxbg-transition-slide3");
+	var tenPercentOfWindowHeight = $("transition-slide1").height()*0.1;
+	var parallaxbg1position = $parallaxbg1.offset().top+tenPercentOfWindowHeight;
+	var parallaxbg2position = $parallaxbg2.offset().top+tenPercentOfWindowHeight;
+	var parallaxbg3position = $parallaxbg3.offset().top+tenPercentOfWindowHeight;
+	console.log(parallaxbg1position);
 	var transitionslide1position = $("#transition-slide1").offset().top;
 	var transitionslide2position = $("#transition-slide2").offset().top;
-	var aboutmeposition =  $("#aboutme").offset().top;
+	var transitionslide3position = $("#transition-slide3").offset().top;
+	var transitionslide4position = $("#transition-slide4").offset().top;
+	var aboutmeposition =  $aboutmeBG.offset().top;
 	var skillsposition =  $("#skills").offset().top;
+	var workposition = $("#work").offset().top;
 	var moveTriUpEnabled = true;
-	var windowHieght = $(window).height()*3;
-	$("#skillsBG").css({
-		"-webkit-transition": "all 200ms ease"
-	});
+	var windowHieght = $(window).height()*2;
 
 //	var setAboutBGToZero = new setElementToAbsoluteTopZero($("#aboutmeBG"));
 //	var setSkillsBGToZero = new setElementToAbsoluteTopZero($("#skillsBG"));
 	$(window).scroll(function(){
-		var currentPosition = $(window).scrollTop();
-		if(currentPosition > transitionslide1position && currentPosition<aboutmeposition){
-			$("#aboutmeBG").css({
-				top: currentPosition-aboutmeposition
-			});
-		}else{
-			$("#aboutmeBG").css({
-				top: 0
-			});
-		}
-		if(currentPosition > transitionslide2position && currentPosition<skillsposition){
-			$("#skillsBG").css({
-				"-webkit-transition": "none !important",
-				top: currentPosition-skillsposition
-			});
-		}
-		if(currentPosition > skillsposition && moveTriUpEnabled){
-			moveTriUpEnabled = false;
-			$("#skillsBG").css({
-				"-webkit-transition": "all 200ms ease",
-				"-webkit-transform": "translateY(-"+windowHieght+"px)"
-			});
-		} else if(!moveTriUpEnabled && currentPosition <skillsposition && currentPosition > transitionslide2position){
-			moveTriUpEnabled = true;
-			$("#skillsBG").css({
-				"-webkit-transform": "translateY(0px)"
-			});
-		}
+		window.requestAnimationFrame(function() {
 
-	});
-}
+			var currentPosition = $(window).scrollTop();
 
-function bindParallax(element, enabledOrDisabled){
-	var element = element;
-	var parent = $(element).parent();
-	var parentElementPosition = $(parent).offset().top;
+			if (currentPosition > 0 && currentPosition < aboutmeposition) {
+				//			console.log("50% "+(currentPosition-transitionslide1position).toString()+"px");
+							 $parallaxbg1.css({
+								"background-position":"50% "+(currentPosition-parallaxbg1position).toString()+"px"
+							});
+//				$("#parallaxbg-transition-slide1").css({
+//					"position": "absolute",
+//					top:currentPosition-parallaxbg1position,
+//					width: "100%"
+//				});
+//				$("#parallaxbg-transition-slide1").css({
+//					position:"fixed",
+//					width: "100%"
+//				})
+			} else if(currentPosition>aboutmeposition && currentPosition<skillsposition){
+				 $parallaxbg2.css({
+					"background-position":"50% "+(currentPosition-parallaxbg2position).toString()+"px"
+				});
+			} else if(currentPosition>skillsposition && currentPosition<workposition){
+				$parallaxbg3.css({
+					"background-position":"50% "+(currentPosition-parallaxbg3position).toString()+"px"
+				});
+			}
 
-	if(enabledOrDisabled) {
-		$(element).data("bindEnabled", enabledOrDisabled);
-	}
-	$(element).data("position", $(element).css("position"));
-	var handler = function(){
-			window.requestAnimationFrame(function () {
-				if($(element).data("bindEnabled") === true) {
-					//			$.data(element, "top", $(element).css("top"));
-					var currentScrollPosition = $(window).scrollTop();
-					var currentElementPosition = $(element).offset().top;
-
-					$(element).css({
-						position: "absolute",
-						top: currentScrollPosition-parentElementPosition
+			if (currentPosition > transitionslide1position && currentPosition < aboutmeposition) {
+				$aboutmeBG.css({
+					top: currentPosition - aboutmeposition
+				});
+			} else {
+				$aboutmeBG.css({
+					top: 0
+				});
+			}
+			if (currentPosition > transitionslide2position && currentPosition < skillsposition) {
+				 $skillsBG.css({
+					"transition": "none !important",
+					top: currentPosition - skillsposition
+				});
+				if (!moveTriUpEnabled) {
+					moveTriUpEnabled = true;
+					$("#skillsBG").css({
+						"-webkit-transform": "translateY(0px)"
 					});
 				}
-			});
-	};
-
-	$(window).on("scroll", handler);
-	//return to allow unbinding later...
-	return handler;
-}
-
-function unbindParallax(element, handler){
-//	console.log(handler);
-	$(window).off("scroll", handler);
-	$(element).css({
-		position:$(element).data("position"),
-		top:"0"
-	});
-//	console.log(element);
-}
-
-function enableParrallax(element){
-	$(element).data("bindEnabled", true);
-}
-
-function disableParallax(element){
-	$(element).data("bindEnabled", false);
-	$(element).css({
-		position:$(element).data("position"),
-		top:"auto"
-	});
-}
-
-function scrollPastAndHandle2(element, downHandler, upHandler){
-	var initialScrollPosition = $(window).scrollTop();
-	var elementScrollPosition = $(element).offset().top;
-	//console.log($(window).scrollTop(), elementScrollPosition);
-	var newDownHandler = function(){
-		if($.data(element, "scrollDownHandling") && $(window).scrollTop()>elementScrollPosition) {
-//			$(window).unbind("scroll", newDownHandler); //can't recursively unbind in javascript for some reason...
-			$.data(element, "scrollDownHandling", false);
-			$.data(element, "scrollUpHandling", true);
-			downHandler();
-			$(window).scroll(newUpHandler);
-		}
-	}
-	var newUpHandler = function(){
-		if($.data(element, "scrollUpHandling") && $(window).scrollTop()<elementScrollPosition){
-			$.data(element, "scrollDownHandling", true);
-			$.data(element, "scrollUpHandling", false);
-			upHandler();
-			$(window).scroll(newDownHandler);
-		}
-	}
-
-	if(initialScrollPosition<elementScrollPosition){
-		$.data(element, "scrollDownHandling", true);
-		$.data(element, "scrollUpHandling", false);
-		$(window).scroll(function(){
-			newDownHandler();
+			}
+			if (currentPosition >= skillsposition && moveTriUpEnabled) {
+				moveTriUpEnabled = false;
+				 $skillsBG.css({
+					"transition": "all 500ms ease",
+					"-webkit-transform": "translateY(-" + windowHieght + "px)"
+				});
+			}
 		});
-	} else {
-		$.data(element, "scrollUpHandling", true);
-		$.data(element, "scrollDownHandling", false);
-		$(window).scroll(newUpHandler);
-	}
+
+	});
 }
 
 
@@ -2636,7 +2565,9 @@ function scrollPastAndHandle2(element, downHandler, upHandler){
 			$("#tranistion-slide3").css("visibility", "visible");
 			$("#skills").css("visibility", "visible");
 		});
-		scrollPastAndSlideUp($("#skills"), backGroundAspectRatio);
+		if(!doesCSSExist("webkitBackfaceVisibility")) {
+			scrollPastAndSlideUp($("#skills"), backGroundAspectRatio);
+		}
 	//		scrollPastAndSlideUp($('#transition-slide2'), backGroundAspectRatio, $('#skills'));
 	//		scrollPastAndSlideUp($("#aboutme"), backGroundAspectRatio, $("#skills"));
 		horizontalCenter($("#coreskills"));
