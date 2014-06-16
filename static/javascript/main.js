@@ -824,7 +824,8 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 //		"overflow":"hidden",
 		"width": "100%",
 		"position": "relative",
-		"pointer-events": "none"
+		"pointer-events": "none",
+		"z-index":1
 	});
 	if(!doesCSSExist("webkitBackfaceVisibility")){
 		$(section).css({
@@ -860,7 +861,7 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		"left":"50%",
 		"bottom":"-10%",
 		"pointer-events": "none",
-		"z-index": 1
+		"z-index": 200
 	});
 	if(isString(width)){
 		$(sizeDiv).height(Math.floor((1/aspect)*$(window).width()));
@@ -875,13 +876,13 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		"pointer-events": "none"
 	});
 
-	mask = $(mask).attr({
-		id:"trianglemask"+randomID
-	});
+//	mask = $(mask).attr({
+//		id:"trianglemask"+randomID
+//	});
 
 	//you must directly access the dom node because jquery converts to lowercase
-	mask[0].setAttribute('maskUnits',"userSpaceOnUse");
-	mask[0].setAttribute('maskContentUnits', "userSpaceOnUse");
+//	mask[0].setAttribute('maskUnits',"userSpaceOnUse");
+//	mask[0].setAttribute('maskContentUnits', "userSpaceOnUse");
 
 	image = $(image).attr({
 		width:"100%",
@@ -892,7 +893,7 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 	foreignObject = $(foreignObject).attr({
 		width:"100%",
 		height:"100%",
-		style:"mask: url(#trianglemask"+randomID+");"
+//		style:"mask: url(#trianglemask"+randomID+");"
 	});
 
 
@@ -996,8 +997,8 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 	$(svg1).append(defs1).append(foreignObject1);
 	$(section1).append(svg1);
 	$(foreignObject).append(section1);
-	$(mask).append(image);
-	$(defs).append(mask);
+//	$(mask).append(image);
+//	$(defs).append(mask);
 	$(svg).append(defs).append(foreignObject);
 	$(sizeDiv).append(svg);
 	$(section).append(sizeDiv);
@@ -1775,7 +1776,8 @@ function createTriangleTransitionSlide(element, color, upper, uppercolor, backgr
 		).width(
 			$(window).width()
 			).css({
-				"z-index":100
+				"z-index":100,
+				"overflow":"visible"
 			});
 
 		if(backgroundColor){
@@ -1790,10 +1792,13 @@ function createTriangleTransitionSlide(element, color, upper, uppercolor, backgr
 
 		$(svg).attr({
 			"width":$(element).width(),
-			"height":$(element).height()
+			"height":$(element).height(),
 		});
 		$(svg).css({
-			"pointer-events":"none"
+			"pointer-events":"none",
+			"position":"absolute",
+			"top":"1px",
+			"overflow":"visible"
 		})
 		var path =  document.createElementNS("http://www.w3.org/2000/svg", 'path');
 		$(path).attr({
@@ -2400,6 +2405,9 @@ function createNoCubeBgElementIfBackFaceExists(element, id){
 }
 
 function chromeOptimizations(){
+	if(!doesCSSExist("webkitBackfaceVisibility")){
+		return;
+	}
 	createNoCubeBgElementIfBackFaceExists($("#aboutme"), "aboutmeBG");
 	createNoCubeBgElementIfBackFaceExists($("#skills"), "skillsBG");
 //	function setElementToAbsoluteTopZero(element){
@@ -2425,7 +2433,6 @@ function chromeOptimizations(){
 	var parallaxbg1position = $parallaxbg1.offset().top+tenPercentOfWindowHeight;
 	var parallaxbg2position = $parallaxbg2.offset().top+tenPercentOfWindowHeight;
 	var parallaxbg3position = $parallaxbg3.offset().top+tenPercentOfWindowHeight;
-	console.log(parallaxbg1position);
 	var transitionslide1position = $("#transition-slide1").offset().top;
 	var transitionslide2position = $("#transition-slide2").offset().top;
 	var transitionslide3position = $("#transition-slide3").offset().top;
@@ -2524,8 +2531,8 @@ function chromeOptimizations(){
 		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.center800'));
 		keepAspectRatioByAdjustingHeight(maskAspectRatio, $('.inner-transition'));
 		mainPage();
-		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide1"));
-		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide2"));
+		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide1"), false);
+		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide2"), false);
 		createArrowTransitionSlide(maskAspectRatio, 800, $("#transition-slide3"), false);
 
 		initializeSlideViews();
@@ -2576,6 +2583,7 @@ function chromeOptimizations(){
 		}
 		scrolling();
 		ieSpecificChecks();
+		console.log("1");
 		coreSkillsSlide($("#coreskills"), 180, 2, 200, 50);
 
 //		The initial area of the occupied space by text is not accurate. Thus you have to use ludicrous angles
