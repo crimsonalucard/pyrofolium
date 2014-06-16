@@ -2583,7 +2583,6 @@ function chromeOptimizations(){
 		}
 		scrolling();
 		ieSpecificChecks();
-		console.log("1");
 		coreSkillsSlide($("#coreskills"), 180, 2, 200, 50);
 
 //		The initial area of the occupied space by text is not accurate. Thus you have to use ludicrous angles
