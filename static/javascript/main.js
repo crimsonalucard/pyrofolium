@@ -1587,11 +1587,14 @@ function coreSkillsSlide(element, radius, thickness, resolution){
 		return function(){
 			if(triggered === false)
 			{
+				$('html, body').css({
+					"scrollTop":$("#skills").offset().top
+				});
 				lockscrolling();
-				(scrollTo($("#skills")))();
 				triggered = true;
-				$("#skills").off();
+				$("#skills > div").off();
 				$(element).children('ul').children('li').dequeue();
+				console.log(element);
 				makeListInvisible();
 				var accumulator = 0;
 				$(element).children('ul').children('li').each(function(index, element){
@@ -1610,7 +1613,7 @@ function coreSkillsSlide(element, radius, thickness, resolution){
 //	scrollPastAndHandle($('#skills'), $("#transition-slide2"),  function(){ deinitilializeRing(); makeListInvisible();}, listOutElements(400, initializeRing(500)));
 //	scrollPastAndHandle($("#skills"), $("#skills"), listOutElements(400, initializeRing(500)), deinitilializeRing);
 //	scrollPastAndHandle($("#skills"), $("#transition-slide3"), function(){ deinitilializeRing(); makeListInvisible();},  listOutElements(400, initializeRing(500)));
-	scrollPastAndHandle($("#skills"), $('#skills'), listOutElements(200, initializeRing(500)), function(){/*do nothing*/});
+	scrollPastAndHandle($("#skills > div"), $('#skills'), listOutElements(200, initializeRing(500)), function(){/*do nothing*/});
 
 
 
@@ -1824,11 +1827,11 @@ function createTriangleTransitionSlide(element, color, upper, uppercolor, backgr
 	$(window).resize(sync);
 }
 
-function scrollTo(element, complete){
+function scrollTo(element, complete, speed){
 	return function(){
 		$('html, body').animate({
 			scrollTop: $(element).offset().top
-		}, 2000);
+		}, speed?speed:2000);
 		if(complete){
 			complete();
 		}
@@ -2599,7 +2602,6 @@ function chromeOptimizations(){
 		}
 		scrolling();
 		ieSpecificChecks();
-		coreSkillsSlide($("#coreskills"), 180, 2, 200, 50);
 
 //		The initial area of the occupied space by text is not accurate. Thus you have to use ludicrous angles
 //		to achieve the correct triangular effect
@@ -2607,6 +2609,7 @@ function chromeOptimizations(){
 		triangleText.appendToElement();
 		contactSlide();
 		chromeOptimizations();
+		coreSkillsSlide($("#coreskills"), 180, 2, 200, 50);
 		removeLoadingScreen();
 		console.log("loading complete...");
 	});
