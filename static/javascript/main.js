@@ -2513,6 +2513,11 @@ function chromeOptimizations(){
 					});
 				}
 			}
+			else{
+				$skillsBG.css({
+					top:0
+				})
+			}
 			if (currentPosition >= skillsposition && moveTriUpEnabled) {
 				moveTriUpEnabled = false;
 				 $skillsBG.css({
