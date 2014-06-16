@@ -2380,10 +2380,25 @@ function initializeSlideViews(){
 //			$("#skills, #work, #contact, #transition-slide2, #transition-slide3").hide();
 
 }
-function createNoCubeBgElementAfterElement(element){
+function createNoCubeBgElementAfterElement(element, seperateContentFromBG){
 	var div = document.createElement("div");
 	$(div).addClass("nocubeBGChrome");
+	var html = $(element).html();
+	$(element).html("");
 	$(element).prepend(div);
+	$(div).html(html);
+//	if(seperateContentFromBG){
+//		$(div).css({
+//			"background-image":"none",
+//			"background-color":"transparent"
+//		});
+//		var bgDiv = document.createElement("div");
+//		$(bgDiv).addClass("nocubeBGChrome").css({
+//			"z-index":0
+//		});
+//		$(element).append(bgDiv);
+//		return bgDiv
+//	}
 	return div;
 }
 
@@ -2397,11 +2412,11 @@ function executeIfBackfaceVisibilityExists(toExecute){
 	}
 }
 
-function createNoCubeBgElementIfBackFaceExists(element, id){
+function createNoCubeBgElementIfBackFaceExists(element, id, seperateContentFromBG){
 	executeIfBackfaceVisibilityExists(function(){
-		var div = createNoCubeBgElementAfterElement(element);
+		var div = createNoCubeBgElementAfterElement(element, seperateContentFromBG);
 		$(div).attr("id", id);
-	})
+	});
 }
 
 function chromeOptimizations(){
@@ -2409,7 +2424,7 @@ function chromeOptimizations(){
 		return;
 	}
 	createNoCubeBgElementIfBackFaceExists($("#aboutme"), "aboutmeBG");
-	createNoCubeBgElementIfBackFaceExists($("#skills"), "skillsBG");
+	createNoCubeBgElementIfBackFaceExists($("#skills"), "skillsBG", true);
 //	function setElementToAbsoluteTopZero(element){
 //		var that = this;
 //		this.element = element;
@@ -2491,7 +2506,7 @@ function chromeOptimizations(){
 				if (!moveTriUpEnabled) {
 					moveTriUpEnabled = true;
 					$("#skillsBG").css({
-						"-webkit-transform": "translateY(0px)"
+						"background-position":"50% 0%"
 					});
 				}
 			}
@@ -2499,7 +2514,8 @@ function chromeOptimizations(){
 				moveTriUpEnabled = false;
 				 $skillsBG.css({
 					"transition": "all 500ms ease",
-					"-webkit-transform": "translateY(-" + windowHieght + "px)"
+//					"-webkit-transform": "translateY(-" + windowHieght + "px)"
+					 "background-position":"50% -"+windowHieght.toString()+"px"
 				});
 			}
 		});
