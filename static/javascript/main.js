@@ -1252,6 +1252,7 @@ function createHexagonChain(element, borderWidth, backgroundWidth, backgroundHei
 
 	//create slideset
 	for (var key in slideSetArray) {
+		var workScrollPosition = $("#work").offset().top;
 		$('#' + slideSetArray[key].clickID).click(function () {
 
 			$("#work").children().each(function () {
@@ -1269,9 +1270,7 @@ function createHexagonChain(element, borderWidth, backgroundWidth, backgroundHei
 				}
 			});
 
-			$('html, body').scrollTop(
-				$('#work').offset().top
-			);
+			$('body, html').scrollTop(workScrollPosition);
 			lockscrolling();
 
 
@@ -1592,7 +1591,6 @@ function coreSkillsSlide(element, radius, thickness, resolution) {
 				triggered = true;
 				$("#skills > div").off();
 				$(element).children('ul').children('li').dequeue();
-				console.log(element);
 				makeListInvisible();
 				var accumulator = 0;
 				$(element).children('ul').children('li').each(function (index, element) {
