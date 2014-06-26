@@ -2539,7 +2539,7 @@ function chromeOptimizations() {
 				});
 			} else {
 				$aboutmeBG.css({
-//					top: 0
+					top: 0
 				});
 
 				if (currentPosition > transitionslide2position && currentPosition < skillsposition) {
