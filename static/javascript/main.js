@@ -789,11 +789,11 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 
 	var section = document.createElement('section');
 	var sizeDiv = document.createElement('div');
-	var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-	var defs = document.createElementNS("http://www.w3.org/2000/svg", 'defs');
-	var mask = document.createElementNS("http://www.w3.org/2000/svg", 'mask');
-	var image = document.createElementNS("http://www.w3.org/2000/svg", 'image');
-	var foreignObject = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
+//	var svg = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+//	var defs = document.createElementNS("http://www.w3.org/2000/svg", 'defs');
+//	var mask = document.createElementNS("http://www.w3.org/2000/svg", 'mask');
+//	var image = document.createElementNS("http://www.w3.org/2000/svg", 'image');
+//	var foreignObject = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
 
 	var firstMaskString = "url(static/images/arrow.png)";
 	var secondMaskString = "url(static/images/triangle.png)";
@@ -821,24 +821,27 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		"pointer-events": "none",
 		"z-index": 1
 	});
-	if (!doesCSSExist("webkitBackfaceVisibility")) {
-		$(section).css({
-			"mask": secondMaskString,
-			"-webkit-mask-image": secondMaskString,
-			"-webkit-mask-repeat": "no-repeat",
-			"-webkit-mask-position-x": "50%",
-			"-webkit-mask-position-y": "100%",
-			"-webkit-mask-size": "100%"
-		});
-	}
-
+//	if (!doesCSSExist("webkitBackfaceVisibility")) {
+//		$(section).css({
+//			"mask": secondMaskString,
+//			"-webkit-mask-image": secondMaskString,
+//			"-webkit-mask-repeat": "no-repeat",
+//			"-webkit-mask-position-x": "50%",
+//			"-webkit-mask-position-y": "100%",
+//			"-webkit-mask-size": "100%"
+//		});
+//	}
+//
 	$(section).attr({
 		'class': 'js-generated',
 		'id': $(element).attr("id")
 	});
 
 	function keepAspectByChanggingHeight(element) {
-		$(element).height(Math.floor((1 / aspect) * getViewPortWidth()));
+//		var height = Math.floor((1 / aspect) * getViewPortWidth());
+		$(element).height($(window).height());
+//		$(eleemnt)
+//		console.log(height)
 	}
 
 	keepAspectByChanggingHeight($(section));
@@ -862,12 +865,12 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 		$(sizeDiv).height(Math.floor((1 / aspect) * width));
 	}
 
-	svg = $(svg).attr({
-		height: '100%',
-		width: '100%',
-		id: 'triangle' + randomID,
-		"pointer-events": "none"
-	});
+//	svg = $(svg).attr({
+//		height: '100%',
+//		width: '100%',
+//		id: 'triangle' + randomID,
+//		"pointer-events": "none"
+//	});
 
 //	mask = $(mask).attr({
 //		id:"trianglemask"+randomID
@@ -877,17 +880,17 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 //	mask[0].setAttribute('maskUnits',"userSpaceOnUse");
 //	mask[0].setAttribute('maskContentUnits', "userSpaceOnUse");
 
-	image = $(image).attr({
-		width: "100%",
-		height: "100%",
-		"xlink:href": secondMask
-	});
+//	image = $(image).attr({
+//		width: "100%",
+//		height: "100%",
+//		"xlink:href": secondMask
+//	});
 
-	foreignObject = $(foreignObject).attr({
-		width: "100%",
-		height: "100%"
-//		style:"mask: url(#trianglemask"+randomID+");"
-	});
+//	foreignObject = $(foreignObject).attr({
+//		width: "100%",
+//		height: "100%"
+////		style:"mask: url(#trianglemask"+randomID+");"
+//	});
 
 
 	var section1 = document.createElement('section');
@@ -988,11 +991,11 @@ function createArrowTransitionSlide(aspect, width, element, alpha, backgroundIma
 	$(defs1).append(mask1);
 	$(svg1).append(defs1).append(foreignObject1);
 	$(section1).append(svg1);
-	$(foreignObject).append(section1);
+//	$(foreignObject).append(section1);
 //	$(mask).append(image);
 //	$(defs).append(mask);
-	$(svg).append(defs).append(foreignObject);
-	$(sizeDiv).append(svg);
+//	$(svg).append(defs).append(foreignObject);
+	$(sizeDiv).append(svg1);
 	$(section).append(sizeDiv);
 
 	element.replaceWith(section);
@@ -2536,7 +2539,7 @@ function chromeOptimizations() {
 				});
 			} else {
 				$aboutmeBG.css({
-					top: 0
+//					top: 0
 				});
 
 				if (currentPosition > transitionslide2position && currentPosition < skillsposition) {

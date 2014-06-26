@@ -38,6 +38,7 @@ body {
 	font-size: 12;
 	overflow-x: hidden;
 	-webkit-backface-visibility: hidden;
+	-moz-backface-visibility:hidden;
 	z-index: -2;
 }
 
