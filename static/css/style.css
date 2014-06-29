@@ -1,18 +1,18 @@
 @font-face {
- font-family: futura; src: url('../font/Futura%20(Light).ttf');
+	font-family: futura;
+	src: url('../font/Futura%20(Light).ttf');
 }
 
 /*@fonts-face {*/
- /*fonts-family: code; src: url('../fonts/CODE%20Bold.otf');*/
+/*fonts-family: code; src: url('../fonts/CODE%20Bold.otf');*/
 /*}*/
 
-
 @font-face {
- font-family: dense;
- src: url('../font/dense-regular-webfont.eot?#iefix') format('embedded-opentype'); /* IE6-IE8 */
- src: url('../font/dense-regular-webfont.eot'); /* IE9 Compat Modes */
- src: url('../font/Dense-Regular.woff');
- /*src: url('../fonts/Dense-Regular.otf');*/
+	font-family: dense;
+	src: url('../font/dense-regular-webfont.eot?#iefix') format('embedded-opentype'); /* IE6-IE8 */
+	src: url('../font/dense-regular-webfont.eot'); /* IE9 Compat Modes */
+	src: url('../font/Dense-Regular.woff');
+	/*src: url('../fonts/Dense-Regular.otf');*/
 }
 
 .overlay {
@@ -20,7 +20,7 @@
 	height: 80%;
 	position: fixed;
 	top: 50%;
-	margin-top:-20%;
+	margin-top: -20%;
 	background-color: black;
 	overflow: scroll;
 }
@@ -38,14 +38,12 @@ body {
 	font-size: 12;
 	overflow-x: hidden;
 	-webkit-backface-visibility: hidden;
-	-moz-backface-visibility:hidden;
+	-moz-backface-visibility: hidden;
 	z-index: -2;
 }
 
-
-
-.no-hover-events{
-	pointer-events:none;
+.no-hover-events {
+	pointer-events: none;
 }
 
 .scrollbutton {
@@ -58,7 +56,7 @@ body {
 	color: #5e6a74;
 }
 
-#scrollbutton1{
+#scrollbutton1 {
 	position: fixed;
 }
 
@@ -70,14 +68,14 @@ body {
 }
 
 #slideset:before {
-  content: '';
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
+	content: '';
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
 }
 
 .straycubesbg {
-	background-image:url("../images/footerrender2.png");
+	background-image: url("../images/footerrender2.png");
 	background-size: cover;
 	background-position: center;
 	/*background-attachment: fixed;*/
@@ -85,11 +83,11 @@ body {
 }
 
 /*.bluetriangleBG {*/
-	/*background-image:url("../images/bluetriangle.svg");*/
-	/*background-size: 100%;*/
-	/*background-position: center;*/
-	/*background-attachment: fixed;*/
-	/*background-repeat: no-repeat;*/
+/*background-image:url("../images/bluetriangle.svg");*/
+/*background-size: 100%;*/
+/*background-position: center;*/
+/*background-attachment: fixed;*/
+/*background-repeat: no-repeat;*/
 /*}*/
 
 #coreskills {
@@ -100,7 +98,7 @@ body {
 }
 
 a {
-	color:#000000;
+	color: #000000;
 	-webkit-transition: all 1s;
 	-moz-transition: all 1s;
 	-o-transition: all 1s;
@@ -112,8 +110,8 @@ a:hover {
 	color: #f8f8ff;
 }
 
-a:visited{
-	color:grey;
+a:visited {
+	color: grey;
 }
 
 #skilltitle {
@@ -125,8 +123,7 @@ a:visited{
 	text-align: center;
 }
 
-
-#arrow{
+#arrow {
 	overflow: hidden;
 }
 
@@ -152,19 +149,19 @@ a:visited{
 	z-index: -2;
 }
 
-#skillsBG{
+#skillsBG {
 	z-index: 0;
 }
 
-.paleborder{
+.paleborder {
 	border-color: #BAB1B9;
 }
 
-.darkborder{
+.darkborder {
 	border-color: #373E44;
 }
 
-.darkfont{
+.darkfont {
 	color: #373E44;
 }
 
@@ -183,36 +180,36 @@ a:visited{
 	display: inline-block;
 }
 
-.cover_sub_text{
+.cover_sub_text {
 	font-size: 25px;
 }
 
-#front-content{
-	z-index:-2;
+#front-content {
+	z-index: -2;
 }
 
-.defaultBG{
+.defaultBG {
 	background-color: #D2CCC9;
 	background-image: url("../images/cover_orthogonal.png");
 	background-attachment: fixed;
-    background-repeat: no-repeat;
+	background-repeat: no-repeat;
 	background-size: 100%;
 	background-position: top;
 }
 
-.nocubeBG{
+.nocubeBG {
 	/*background-color: #D2CCC9;*/
 	background-image: url("../images/no_cube.jpg");
 	background-attachment: fixed;
-    background-repeat: no-repeat;
+	background-repeat: no-repeat;
 	background-size: 100%;
 	background-position: top;
 }
 
-.nocubeBGChrome{
+.nocubeBGChrome {
 	background-color: #D2CCC9;
 	background-image: url("../images/no_cube.jpg");
-    background-repeat: no-repeat;
+	background-repeat: no-repeat;
 	background-size: 100%;
 	background-position: top;
 	position: absolute;
@@ -222,7 +219,7 @@ a:visited{
 	top: 0%;
 }
 
-.arrowMask{
+.arrowMask {
 	background-color: #D2CCC9;
 	background-image: url("../images/cover_cubes.jpg");
 	background-attachment: fixed;
@@ -235,7 +232,7 @@ a:visited{
 	-webkit-mask-size: 100%;
 }
 
-.hexagonMask{
+.hexagonMask {
 	background-color: #D2CCC9;
 	background-image: url("../images/cover_cubes.jpg");
 	background-attachment: fixed;
@@ -250,8 +247,7 @@ a:visited{
 	position: absolute;
 }
 
-
-.center800{
+.center800 {
 	width: 800px;
 	margin-left: -400px;
 	position: absolute;
@@ -287,16 +283,16 @@ a:visited{
 	display: inline-block;
 }
 
-
-.blackBG
-{
+.blackBG {
 	background-color: #000000;
 	background-size: 100%;
 }
+
 .stretch {
 	width: 100%;
 	height: 100%;
 }
+
 .cover {
 	width: 100%;
 }
@@ -308,23 +304,23 @@ a:visited{
 	position: relative;
 }
 
-.no-pointer-events{
-	pointer-events:none;
+.no-pointer-events {
+	pointer-events: none;
 }
 
-.palefont{
+.palefont {
 	color: #BAB1B9;
 }
 
-#contact{
+#contact {
 	z-index: 100;
 }
 
-.padtop{
+.padtop {
 	padding-top: 5%;
 }
 
-.margintop{
+.margintop {
 	margin-top: 5%;
 }
 
@@ -362,11 +358,11 @@ a:visited{
 	background-color: #D2CCC9;
 }
 
-#scrollbutton1{
+#scrollbutton1 {
 	z-index: 0;
 }
 
-.title{
+.title {
 	text-align: center;
 	font-size: 50px;
 	position: absolute;
@@ -386,7 +382,7 @@ a:visited{
 	height: 100px;
 }
 
-.nopaddingnomargin{
+.nopaddingnomargin {
 	padding: 0;
 	margin: 0;
 	display: block;
@@ -396,28 +392,28 @@ a:visited{
 	text-shadow: 0px 0px 200px rgba(0, 0, 0, 1);
 }
 
-.left_pane{
+.left_pane {
 	left: 0%;
 	text-align: right;
 	border-right: 1px solid;
 	padding-right: 10px;
 	width: 50%;
 	float: left;
-	-moz-box-sizing:border-box;
-	-webkit-box-sizing:border-box;
-	box-sizing:border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
-.right_pane{
+.right_pane {
 	right: 0%;
 	text-align: left;
 	border-left: 1px solid;
 	padding-left: 10px;
 	width: 50%;
 	float: right;
-	-moz-box-sizing:border-box;
-	-webkit-box-sizing:border-box;
-	box-sizing:border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 footer {

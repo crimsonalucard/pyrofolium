@@ -1944,8 +1944,8 @@ function SlideSetObject(listElement, associatedClickID) {
 				$(that.image).attr({
 					"src": $(element).attr("src")
 				}).css({
-					"max-width": $(element).attr("class") === "noStyling" ? "auto" : "70%",
-					"max-height": "70%",
+//					"max-width": $(element).attr("class") === "noStyling" ? "auto" : "70%",
+//					"max-height": "70%",
 					"margin-left": "auto",
 					"margin-right": "auto",
 					"display": "block"
