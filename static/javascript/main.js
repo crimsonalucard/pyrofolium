@@ -2532,7 +2532,6 @@ function chromeOptimizations() {
 					"background-position": "50% " + (currentPosition - parallaxbg3position).toString() + "px"
 				});
 			}
-
 			if (currentPosition > transitionslide1position && currentPosition < aboutmeposition) {
 				$aboutmeBG.css({
 					top: currentPosition - aboutmeposition
