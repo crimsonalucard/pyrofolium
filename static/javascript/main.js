@@ -1404,7 +1404,19 @@ function scrollPastAndSlideUp(element, aspect, elementTrigger) {
 				//			$(element).animate({
 				//				"background-position-y":heightToBeMoved.toString()+"px"
 				//			}, 400);
-				$(element).css({"background-position": "0 0"}).stop(true, false).animateBG(0, heightToBeMoved, 800);
+//				$(element).css({"background-position": "0 0"}).stop(true, false).animateBG(0, heightToBeMoved, 800);
+				$(element).css({
+					"background-position": "0 0",
+					"-webkit-transition": "background-position 3s ease",
+					"-moz-transition": "background-position 3s ease",
+					"-ms-transition": "background-position 3s ease",
+					"-o-transition": "background-position 3s ease",
+					"transition": "background-position 3s ease"
+				});
+				$(element).css({
+					"background-position": "0 " + heightToBeMoved.toString()
+				});
+
 			}
 		}
 
@@ -1412,7 +1424,19 @@ function scrollPastAndSlideUp(element, aspect, elementTrigger) {
 			if ($(document).scrollTop() <= marker) {
 				$(window).unbind("scroll", scrollUpPastHandler);
 				$(window).scroll(scrollDownPastHandler);
-				$(element).css({"background-position": "0 " + heightToBeMoved}).stop(true, false).animateBG(0, 0, 800);
+//				$(element).css({"background-position": "0 " + heightToBeMoved}).stop(true, false).animateBG(0, 0, 800);
+				$(element).css({
+					"background-position": "0 "+heightToBeMoved.toString(),
+					"-webkit-transition": "background-position 3s ease",
+					"-moz-transition": "background-position 3s ease",
+					"-ms-transition": "background-position 3s ease",
+					"-o-transition": "background-position 3s ease",
+					"transition": "background-position 3s ease"
+				});
+				$(element).css({
+					"background-position": "0 0"
+				});
+
 			}
 		}
 
@@ -2286,7 +2310,8 @@ function SlideSetObject(listElement, associatedClickID) {
 		$(slideSetSizer).click(function () {
 
 			var that = this;
-			function disableAnim(){
+
+			function disableAnim() {
 				$(this).css({
 					"-webkit-transition": "none",
 					"-moz-transition": "none",
@@ -2295,6 +2320,7 @@ function SlideSetObject(listElement, associatedClickID) {
 					"transition": "none"
 				})
 			}
+
 			$(placementElement).children().each(function () {
 				$(this).css({
 					opacity: 1,
@@ -2305,9 +2331,9 @@ function SlideSetObject(listElement, associatedClickID) {
 					"transition": "all 200ms ease"
 				});
 			})
-					.on("transitionend", disableAnim)
-					.on("webkitTransitionEnd", disableAnim)
-					.on("oTransitionEnd", disableAnim);
+				.on("transitionend", disableAnim)
+				.on("webkitTransitionEnd", disableAnim)
+				.on("oTransitionEnd", disableAnim);
 			$(placementElement).css("z-index", zindex);
 
 			if (!Modernizr.csstransitions) {
@@ -2482,6 +2508,7 @@ function chromeOptimizations() {
 //			}
 //		}
 //	}
+	var $body = $("body");
 	var $aboutmeBG = $("#aboutmeBG");
 	var $skillsBG = $("#skillsBG");
 	var $workBG = $("#workBG");
@@ -2509,7 +2536,7 @@ function chromeOptimizations() {
 
 			var currentPosition = $(window).scrollTop();
 
-			if (currentPosition > 0 && currentPosition < aboutmeposition) {
+			if (currentPosition > 0 && currentPosition <= aboutmeposition) {
 				//			console.log("50% "+(currentPosition-transitionslide1position).toString()+"px");
 				$parallaxbg1.css({
 					"background-position": "50% " + (currentPosition - parallaxbg1position).toString() + "px"
@@ -2522,12 +2549,12 @@ function chromeOptimizations() {
 //				$("#parallaxbg-transition-slide1").css({
 //					position:"fixed",
 //					width: "100%"
-//				})
-			} else if (currentPosition > aboutmeposition && currentPosition < skillsposition) {
+//				});
+			} else if (currentPosition > aboutmeposition && currentPosition <= skillsposition) {
 				$parallaxbg2.css({
 					"background-position": "50% " + (currentPosition - parallaxbg2position).toString() + "px"
 				});
-			} else if (currentPosition > skillsposition && currentPosition < workposition) {
+			} else if (currentPosition > skillsposition && currentPosition <= workposition) {
 				$parallaxbg3.css({
 					"background-position": "50% " + (currentPosition - parallaxbg3position).toString() + "px"
 				});
@@ -2554,6 +2581,7 @@ function chromeOptimizations() {
 					}
 				}
 				else {
+
 					if (currentPosition > transitionslide3position && currentPosition < workposition) {
 						$workBG.css({
 							top: currentPosition - workposition,
