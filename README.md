@@ -1,6 +1,12 @@
 pyrofolium
 ==========
 
+Update: 9/28/2017
+This is an old site I made when I was younger. It represents my first attempt at making a website. There are huge problems with it. Lack of compatability with screen sizes and devices (it's optimized for 1440 by 900 chrome). Additionally it gets jittery at certain times which is an artifact of the fact that the cutout effect uses an unconventional hack. The hack use to work fine but as chrome changed versions over time the jittery effect appeared. Additionally the design of the site has heavy problems; UI was emphasized over UX which means that you might miss some details as you scroll through it (there's a gallery of projects I've done that everyone just misses). Check it out at www.pyrofolium.com
+
+
+===========
+
 Quick and dirty build and deploy instructions:
 
 make sure you have nodejs, npm and grunt installed.
